@@ -1,0 +1,30 @@
+{
+	"name": "kg-bot/laravel-24sevenoffice",
+	"description": "Laravel Integration With 24 Seven Office API",
+	"license": "MIT",
+	"type": "library",
+	"authors": [
+		{
+			"name": "Stefan Ninic",
+			"email": "ninicstefan94@gmail.com"
+		}
+	],
+	"require": {
+		"php": ">=7.1",
+		"laravel/framework": "^5.5",
+		"ext-json": "*",
+		"guzzlehttp/guzzle": "*"
+	},
+	"autoload": {
+		"psr-4": {
+			"KgBot\\SO24\\": "src/"
+		}
+	},
+	"extra": {
+		"laravel": {
+			"providers": [
+				"KgBot\\SO24\\SO24ServiceProvider"
+			]
+		}
+	}
+}
