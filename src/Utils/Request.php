@@ -101,7 +101,7 @@ class Request
 	 * @return void
 	 **/
 	public function set_service( $service = 'Contact/PersonService' ) {
-		$this->service = 'http://webservices.24sevenoffice.com/' . $service . '.asmx?WSDL';
+		$this->service = 'https://webservices.24sevenoffice.com/' . $service . '.asmx?WSDL';
 	}
 
 	/**
