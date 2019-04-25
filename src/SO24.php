@@ -25,7 +25,7 @@ class SO24
 	 * @param array $headers Custom Guzzle headers
 	 */
 	public function __construct( $username = null, $password = null, $api_token = null, $options = [], $headers = [] ) {
-		$this->initRequest( $username, $password, $api_token, $options, $headers );
+		return $this->initRequest( $username, $password, $api_token, $options, $headers );
 	}
 
 	/**
@@ -40,6 +40,8 @@ class SO24
 	public function set_service( $service ) {
 
 		$this->request->set_service( $service );
+
+		return $this;
 	}
 
 	public function call( $action, $request ) {
