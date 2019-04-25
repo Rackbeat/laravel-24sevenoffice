@@ -101,7 +101,7 @@ class Request
 	 * @return void
 	 **/
 	public function set_service( $service = 'Contact/PersonService' ) {
-		$this->service = 'https://webservices.24sevenoffice.com/' . $service . '.asmx?WSDL';
+		$this->service = 'https://api.24sevenoffice.com/' . $service . '.asmx?WSDL';
 	}
 
 	/**
@@ -139,7 +139,7 @@ class Request
 		$params ["credential"]["Password"]      = $encodedPassword;
 		$params ["credential"]["ApplicationId"] = $this->api_key;
 		$params ["credential"]["IdentityId"]    = $this->identity;
-		$authentication                         = new SoapClient( "https://webservices.24sevenoffice.com/authenticate/authenticate.asmx?wsdl", $options );
+		$authentication                         = new SoapClient( "https://api.24sevenoffice.com/authenticate/authenticate.asmx?wsdl", $options );
 		$login                                  = true;
 		if ( ! empty( $_SESSION['ASP.NET_SessionId'] ) ) {
 
