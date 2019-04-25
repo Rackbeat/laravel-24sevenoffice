@@ -139,7 +139,7 @@ class Request
 		$params ["credential"]["Password"]      = $encodedPassword;
 		$params ["credential"]["ApplicationId"] = $this->api_key;
 		$params ["credential"]["IdentityId"]    = $this->identity;
-		$authentication                         = new SoapClient( "https://api.24sevenoffice.com/authenticate/authenticate.asmx?wsdl", $options );
+		$authentication                         = new SoapClient( "https://api.24sevenoffice.com/authenticate/V001/authenticate.asmx?wsdl", $options );
 		$login                                  = true;
 		if ( ! empty( $_SESSION['ASP.NET_SessionId'] ) ) {
 
