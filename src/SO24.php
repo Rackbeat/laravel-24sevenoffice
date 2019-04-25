@@ -25,7 +25,7 @@ class SO24
 	 * @param array $headers Custom Guzzle headers
 	 */
 	public function __construct( $username = null, $password = null, $api_token = null, $options = [], $headers = [] ) {
-		return $this->initRequest( $username, $password, $api_token, $options, $headers );
+		$this->request = $this->initRequest( $username, $password, $api_token, $options, $headers );
 	}
 
 	/**
