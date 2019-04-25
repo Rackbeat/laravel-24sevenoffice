@@ -133,12 +133,10 @@ class Request
 	private function get_auth() {
 		$options                                = [ 'trace' => 1, 'style' => SOAP_RPC, 'use' => SOAP_ENCODED ];
 		$params                                 = [];
-		$params ["credential"]["Type"]          = $this->type;
 		$params ["credential"]["Username"]      = $this->username;
 		$encodedPassword                        = md5( mb_convert_encoding( $this->password, 'utf-16le', 'utf-8' ) );
 		$params ["credential"]["Password"]      = $encodedPassword;
 		$params ["credential"]["ApplicationId"] = $this->api_key;
-		$params ["credential"]["IdentityId"]    = $this->identity;
 		$authentication                         = new SoapClient( "https://api.24sevenoffice.com/authenticate/V001/authenticate.asmx?wsdl", $options );
 		$login                                  = true;
 		if ( ! empty( $_SESSION['ASP.NET_SessionId'] ) ) {
