@@ -170,8 +170,25 @@ class Request
 	 **/
 	private function service() {
 
-		$options = [ 'trace' => 1, 'style' => SOAP_RPC, 'use' => SOAP_ENCODED ];
-		$service = new SoapClient ( $this->service );
+		$opts = [
+			'ssl' => [
+				'ciphers'          => 'RC4-SHA',
+				'verify_peer'      => false,
+				'verify_peer_name' => false
+			]
+		];
+
+		$options = [
+			'encoding'           => 'UTF-8',
+			'verifypeer'         => false,
+			'verifyhost'         => false,
+			'soap_version'       => SOAP_1_2,
+			'trace'              => 1,
+			'exceptions'         => 1,
+			'connection_timeout' => 180,
+			'stream_context'     => stream_context_create( $opts )
+		];
+		$service = new SoapClient ( $this->service, $options );
 		$service->__setCookie( "ASP.NET_SessionId", $_SESSION['ASP.NET_SessionId'] );
 
 		return $service;
