@@ -100,8 +100,8 @@ class Request
 	 *
 	 * @return void
 	 **/
-	public function set_service( $service = 'Contact/PersonService' ) {
-		$this->service = 'https://api.24sevenoffice.com/' . $service . '.asmx?WSDL';
+	public function set_service( $service = 'Contact/PersonService', $ssl = true ) {
+		$this->service = ( ( $ssl === true ) ? 'https' : 'http' ) . '://api.24sevenoffice.com/' . $service . '.asmx?WSDL';
 	}
 
 	/**
