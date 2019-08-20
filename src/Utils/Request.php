@@ -102,7 +102,7 @@ class Request
 	 **/
     public function set_service($service = 'CRM/Contact/PersonService', $ssl = true, $webservice = false)
     {
-        $this->service = (($ssl === true) ? 'https' : 'http') . '://' . (($webservice === true) ? 'webservice' : 'api') . '.24sevenoffice.com/' . $service . '.asmx?WSDL';
+        $this->service = (($ssl === true) ? 'https' : 'http') . '://' . (($webservice === true) ? 'webservices' : 'api') . '.24sevenoffice.com/' . $service . '.asmx?WSDL';
 	}
 
 	/**
