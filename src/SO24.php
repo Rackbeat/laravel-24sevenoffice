@@ -37,9 +37,10 @@ class SO24
 		return new Request( $username, $password, $api_token, $options, $headers );
 	}
 
-	public function set_service( $service, $ssl = true ) {
+    public function set_service($service, $ssl = true, $webservice = false)
+    {
 
-		$this->request->set_service( $service, $ssl );
+        $this->request->set_service($service, $ssl, $webservice);
 
 		return $this;
 	}
