@@ -53,7 +53,7 @@ class Request
 	 *
 	 * @var string $identity
 	 **/
-	private $identity = '00000000-0000-0000-0000-000000000000';
+    private $identity = null;
 	/**
 	 * @var array $options
 	 */
@@ -66,10 +66,12 @@ class Request
 	 * @param array $options
 	 * @param array $headers
 	 */
-	public function __construct( $username = null, $password = null, $api_token = null, $options = [], $headers = [] ) {
+    public function __construct($username = null, $password = null, $api_token = null, $identity = null, $options = [], $headers = [])
+    {
 		$this->username = $username ?? config( 'laravel-24so.username' );
 		$this->password = $password ?? config( 'laravel-24so.password' );
 		$this->api_key  = $api_token ?? config( 'laravel-24so.api_key' );
+        $this->identity = $identity;
 	}
 
 	/**
@@ -137,6 +139,10 @@ class Request
 		$params ["credential"]["Username"]      = $this->username;
 		$encodedPassword                        = md5( mb_convert_encoding( $this->password, 'utf-16le', 'utf-8' ) );
 		$params ["credential"]["Password"]      = $encodedPassword;
+        if ($this->identity !== null) {
+
+            $params ["credential"]["IdentityId"] = $this->identity;
+        }
 		$params ["credential"]["ApplicationId"] = $this->api_key;
 		$authentication                         = new SoapClient( "https://api.24sevenoffice.com/authenticate/V001/authenticate.asmx?wsdl", $options );
 		$login                                  = true;
