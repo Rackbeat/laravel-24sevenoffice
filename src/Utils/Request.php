@@ -134,19 +134,19 @@ class Request
 	 * @return void
 	 **/
 	private function get_auth() {
-		$options                                = [ 'trace' => 1, 'style' => SOAP_RPC, 'use' => SOAP_ENCODED ];
-		$params                                 = [];
-		$params ["credential"]["Username"]      = $this->username;
-		$encodedPassword                        = md5( mb_convert_encoding( $this->password, 'utf-16le', 'utf-8' ) );
-		$params ["credential"]["Password"]      = $encodedPassword;
+        $options = ['trace' => 1, 'style' => SOAP_RPC, 'use' => SOAP_ENCODED];
+        $params = [];
+        $params ["credential"]["Username"] = $this->username;
+        $encodedPassword = $this->password;
+        $params ["credential"]["Password"] = $encodedPassword;
         if ($this->identity !== null) {
 
             $params ["credential"]["IdentityId"] = $this->identity;
         }
-		$params ["credential"]["ApplicationId"] = $this->api_key;
-		$authentication                         = new SoapClient( "https://api.24sevenoffice.com/authenticate/V001/authenticate.asmx?wsdl", $options );
-		$login                                  = true;
-		if ( ! empty( $_SESSION['ASP.NET_SessionId'] ) ) {
+        $params ["credential"]["ApplicationId"] = $this->api_key;
+        $authentication = new SoapClient("https://api.24sevenoffice.com/authenticate/V001/authenticate.asmx?wsdl", $options);
+        $login = true;
+        if (!empty($_SESSION['ASP.NET_SessionId'])) {
 
 			$authentication->__setCookie( "ASP.NET_SessionId", $_SESSION['ASP.NET_SessionId'] );
 			try {
