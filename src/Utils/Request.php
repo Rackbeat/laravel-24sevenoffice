@@ -150,13 +150,25 @@ class Request
         }
         $params ['credential']['ApplicationId'] = $this->api_key;
         $authentication = new SoapClient('https://api.24sevenoffice.com/authenticate/V001/authenticate.asmx?wsdl', $options);
-        $result = ($temp = $authentication->Login($params));
-        $this->sessionId = $result->LoginResult;
-        // each separate webservice need the cookie set
-        $authentication->__setCookie('ASP.NET_SessionId', $this->sessionId);
-        // throw an error if the login is unsuccessful
-        if ($authentication->HasSession()->HasSessionResult == false) {
-            throw new SoapFault('0', 'Invalid credential information.');
+        $login = true;
+        if (!empty($this->sessionId)) {
+
+            $authentication->__setCookie("ASP.NET_SessionId", $this->sessionId);
+            try {
+                $login = !($authentication->HasSession()->HasSessionResult);
+            } catch (SoapFault $fault) {
+                $login = true;
+            }
+        }
+        if ($login) {
+            $result = ($temp = $authentication->Login($params));
+            $this->sessionId = $result->LoginResult;
+            // each separate webservice need the cookie set
+            $authentication->__setCookie('ASP.NET_SessionId', $this->sessionId);
+            // throw an error if the login is unsuccessful
+            if ($authentication->HasSession()->HasSessionResult == false) {
+                throw new SoapFault('0', 'Invalid credential information.');
+            }
         }
     }
 
