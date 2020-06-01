@@ -1,52 +1,88 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nts
- * Date: 31.3.18.
- * Time: 15.12
- */
 
 namespace KgBot\SO24;
 
+use KgBot\SO24\Services\AuthenticateService;
+use KgBot\SO24\Services\ClientService;
+use KgBot\SO24\Services\CompanyService;
+use KgBot\SO24\Services\InvoiceService;
+use KgBot\SO24\Services\PersonService;
+use KgBot\SO24\Services\ProductService;
 use KgBot\SO24\Utils\Request;
 
 class SO24
 {
 	/**
-	 * @var $request Request
+	 * @var Request
 	 */
 	protected $request;
 
 	/**
-	 * Rackbeat constructor.
+	 * SO24 constructor.
 	 *
-	 * @param null  $token   API token
-	 * @param array $options Custom Guzzle options
-	 * @param array $headers Custom Guzzle headers
+	 * @param null  $username
+	 * @param null  $password
+	 * @param null  $api_token
+	 * @param null  $identity
+	 * @param array $options
 	 */
-	public function __construct( $username = null, $password = null, $api_token = null, $identity = null, $options = [], $headers = [] ) {
-        $this->request = $this->initRequest($username, $password, $api_token, $identity, $options, $headers);
-    }
+	public function __construct( $username = null, $password = null, $api_token = null, $identity = null, $options = [] ) {
+		$this->request = $this->initRequest( $username, $password, $api_token, $identity, $options );
+	}
 
 	/**
-	 * @param       $token
+	 * @param       $username
+	 * @param       $password
+	 * @param       $api_token
+	 * @param       $identity
+	 *
 	 * @param array $options
-	 * @param array $headers
+	 *
+	 * @return Request
 	 */
-	private function initRequest( $username, $password, $api_token, $identity, $options = [], $headers = [] ) {
-		return new Request( $username, $password, $api_token, $identity, $options, $headers );
+	private function initRequest( $username, $password, $api_token, $identity, $options = [] ): Request {
+		return new Request( $username, $password, $api_token, $identity, $options );
 	}
 
-    public function set_service($service, $ssl = true, $webservice = false)
-    {
-
-        $this->request->set_service($service, $ssl, $webservice);
-
-		return $this;
+	/**
+	 * @return InvoiceService
+	 */
+	public function invoices(): InvoiceService {
+		return new InvoiceService( $this->request );
 	}
 
-	public function call( $action, $request ) {
+	/**
+	 * @return ProductService
+	 */
+	public function products(): ProductService {
+		return new ProductService( $this->request );
+	}
 
-		return $this->request->call( $action, $request );
+	/**
+	 * @return CompanyService
+	 */
+	public function companies(): CompanyService {
+		return new CompanyService( $this->request );
+	}
+
+	/**
+	 * @return PersonService
+	 */
+	public function persons(): PersonService {
+		return new PersonService( $this->request );
+	}
+
+	/**
+	 * @return ClientService
+	 */
+	public function clients(): ClientService {
+		return new ClientService( $this->request );
+	}
+
+	/**
+	 * @return AuthenticateService
+	 */
+	public function authenticate_service(): AuthenticateService {
+		return new AuthenticateService( $this->request );
 	}
 }

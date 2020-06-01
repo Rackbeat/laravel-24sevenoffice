@@ -13,7 +13,8 @@
 		"php": ">=7.1",
 		"laravel/framework": "^5.5",
 		"ext-json": "*",
-		"guzzlehttp/guzzle": "*"
+		"guzzlehttp/guzzle": "*",
+		"ext-soap": "*"
 	},
 	"autoload": {
 		"psr-4": {
