@@ -2,6 +2,7 @@
 
 namespace KgBot\SO24;
 
+use KgBot\SO24\Services\AccountService;
 use KgBot\SO24\Services\AuthenticateService;
 use KgBot\SO24\Services\ClientService;
 use KgBot\SO24\Services\CompanyService;
@@ -84,5 +85,12 @@ class SO24
 	 */
 	public function authenticate_service(): AuthenticateService {
 		return new AuthenticateService( $this->request );
+	}
+
+	/**
+	 * @return AccountService
+	 */
+	public function account_service(): AccountService {
+		return new AccountService( $this->request );
 	}
 }
