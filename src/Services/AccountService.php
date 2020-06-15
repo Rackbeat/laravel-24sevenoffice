@@ -21,4 +21,14 @@ class AccountService extends BaseService
 
 		return is_array( $response ) ? $response : [ $response ];
 	}
+
+	/**
+	 * @param $data
+	 *
+	 * @return mixed
+	 * @throws \SoapFault
+	 */
+	public function SaveBundleList( $data ) {
+		return $this->request->call( 'SaveBundleList', $data )->SaveBundleListResult;
+	}
 }
