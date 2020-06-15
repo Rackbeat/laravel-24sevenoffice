@@ -9,6 +9,7 @@ use KgBot\SO24\Services\CompanyService;
 use KgBot\SO24\Services\InvoiceService;
 use KgBot\SO24\Services\PersonService;
 use KgBot\SO24\Services\ProductService;
+use KgBot\SO24\Services\TransactionService;
 use KgBot\SO24\Utils\Request;
 
 class SO24
@@ -92,5 +93,12 @@ class SO24
 	 */
 	public function account_service(): AccountService {
 		return new AccountService( $this->request );
+	}
+
+	/**
+	 * @return TransactionService
+	 */
+	public function transaction_service(): TransactionService {
+		return new TransactionService( $this->request );
 	}
 }
