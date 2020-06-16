@@ -96,15 +96,11 @@ class Request
 	 */
 	public function call( $action, array $request ) {
 		$this->get_auth();
-		try {
-			$service = $this->service();
-			$request = $this->parse_query( $request );
-			$results = $service->__soapCall( $action, [ $request ] );
-		} catch ( SoapFault $e ) {
-			$results = 'Errors occurred:' . $e->getMessage();
-		}
+		$service = $this->service();
+		$request = $this->parse_query( $request );
 
-		return $results;
+		return $service->__soapCall( $action, [ $request ] );
+
 	}
 
 	/**

@@ -31,4 +31,22 @@ class AccountService extends BaseService
 	public function SaveBundleList( $data ) {
 		return $this->request->call( 'SaveBundleList', $data )->SaveBundleListResult;
 	}
+
+	/**
+	 * @param $query
+	 *
+	 * @return mixed
+	 * @throws \SoapFault
+	 */
+	public function GetEntryId( $query ) {
+		return $this->request->call( 'GetEntryId', $query )->GetEntryIdResult;
+	}
+
+	/**
+	 * @return mixed
+	 * @throws \SoapFault
+	 */
+	public function GetTypeList() {
+		return $this->request->call( 'GetTypeList', [] )->GetTypeListResult;
+	}
 }
