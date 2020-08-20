@@ -87,6 +87,7 @@ class Request
 
 			if ( preg_match( '/https:\/\/api\.24sevenoffice\.com\/authenticate\/V001\/authenticate\.asmx\?wsdl/', $message ) ) {
 				try {
+					sleep( 2 );
 					$this->get_auth();
 
 					return $callback();
