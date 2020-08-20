@@ -32,7 +32,7 @@ class SO24
 	 *
 	 * @throws Exceptions\SO24RequestException
 	 */
-	public function __construct( $username = null, $password = null, $api_token = null, $identity = null, $options = [], BucketContract $bucket = null ) {
+	public function __construct( $username, $password, $api_token, BucketContract $bucket, $identity = null, $options = [] ) {
 		$this->request = $this->initRequest( $username, $password, $api_token, $identity, $options, $bucket );
 	}
 
