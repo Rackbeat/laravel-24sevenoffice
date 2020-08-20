@@ -51,6 +51,9 @@ class Request
 
 	private $sessionId;
 
+	/** @var SoapClient */
+	private $soapClient;
+
 	/**
 	 * Request constructor.
 	 *
@@ -110,13 +113,33 @@ class Request
 	 * @return mixed The result of the call or the exception if errors
 	 * @throws SoapFault
 	 */
-	public function call( $action, array $request ) {
-		return $this->handleWithExceptions( function () use ( $action, $request ) {
+	public function call( $action, array $request, $attempts = 0 ) {
+		return $this->handleWithExceptions( function () use ( $action, $request, $attempts ) {
 			$service = $this->service();
 			$request = $this->parse_query( $request );
 
-			return $service->__soapCall( $action, [ $request ] );
+			try {
+				return $service->__soapCall( $action, [ $request ] );
+			} catch ( \Exception $exception ) {
+				if ( $exception->getCode() === 429 && $attempts <= 3 ) {
+					sleep( $this->retryAfterValue() );
+
+					return $this->call( $action, $request, $attempts + 1 );
+				}
+
+				throw $exception;
+			}
 		} );
+	}
+
+	private function retryAfterValue() {
+		if ( $this->soapClient->__getLastResponseHeaders() == null ) {
+			throw new Exception( 'Cannot be called before an API call.' );
+		}
+
+		\Log::debug( 'Last response: ' . $this->soapClient->__getLastResponse() );
+
+		return 1;
 	}
 
 	/**
@@ -154,9 +177,7 @@ class Request
 	}
 
 	/**
-	 * Gets the service.
-	 *
-	 * @return object The current service
+	 * @return SoapClient
 	 * @throws SoapFault
 	 */
 	public function service() {
@@ -164,6 +185,8 @@ class Request
 
 		$service = new SoapClient( $this->service, $options );
 		$service->__setCookie( 'ASP.NET_SessionId', $this->sessionId );
+
+		$this->soapClient = $service;
 
 		return $service;
 	}
