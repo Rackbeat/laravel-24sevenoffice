@@ -66,6 +66,10 @@ class Request
 		$this->api_key  = $api_token ?? config( 'laravel-24so.api_key' );
 		$this->identity = $identity;
 		$this->options  = $options;
+
+		$this->handleWithExceptions( function () {
+			$this->get_auth();
+		} );
 	}
 
 	/**
@@ -81,6 +85,17 @@ class Request
 			$message = $exception->getMessage();
 			$code    = $exception->getCode();
 
+			if ( preg_match( '/https:\/\/api\.24sevenoffice\.com\/authenticate\/V001\/authenticate\.asmx\?wsdl/', $message ) ) {
+				try {
+					$this->get_auth();
+
+					return $callback();
+				} catch ( \Exception $e ) {
+
+					throw new SO24RequestException( $e->getMessage(), $e->getCode() );
+				}
+			}
+
 			throw new SO24RequestException( $message, $code );
 		}
 	}
@@ -95,12 +110,12 @@ class Request
 	 * @throws SoapFault
 	 */
 	public function call( $action, array $request ) {
-		$this->get_auth();
-		$service = $this->service();
-		$request = $this->parse_query( $request );
+		return $this->handleWithExceptions( function () use ( $action, $request ) {
+			$service = $this->service();
+			$request = $this->parse_query( $request );
 
-		return $service->__soapCall( $action, [ $request ] );
-
+			return $service->__soapCall( $action, [ $request ] );
+		} );
 	}
 
 	/**
