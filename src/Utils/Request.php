@@ -2,8 +2,12 @@
 
 namespace KgBot\SO24\Utils;
 
+use App\Classes\ShopifyRestBucket;
+use App\Classes\SO24RestBucket;
+use Carbon\Carbon;
 use Exception;
-use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Config;
+use KgBot\SO24\Contracts\BucketContract;
 use KgBot\SO24\Exceptions\SO24RequestException;
 use SoapClient;
 use SoapFault;
@@ -12,10 +16,7 @@ libxml_disable_entity_loader( false );
 
 class Request
 {
-	/**
-	 * @var Client
-	 */
-	public $client;
+
 	/**
 	 * API Key.
 	 *
@@ -53,22 +54,28 @@ class Request
 
 	/** @var SoapClient */
 	private $soapClient;
+	/** @var BucketContract */
+	protected $bucket;
 
 	/**
 	 * Request constructor.
 	 *
-	 * @param null  $username
-	 * @param null  $password
-	 * @param null  $api_token
-	 * @param null  $identity
-	 * @param array $options
+	 * @param null                $username
+	 * @param null                $password
+	 * @param null                $api_token
+	 * @param null                $identity
+	 * @param array               $options
+	 * @param BucketContract|null $bucket
+	 *
+	 * @throws SO24RequestException
 	 */
-	public function __construct( $username = null, $password = null, $api_token = null, $identity = null, $options = [] ) {
-		$this->username = $username ?? config( 'laravel-24so.username' );
-		$this->password = $password ?? config( 'laravel-24so.password' );
-		$this->api_key  = $api_token ?? config( 'laravel-24so.api_key' );
+	public function __construct( $username = null, $password = null, $api_token = null, $identity = null, $options = [], BucketContract $bucket = null ) {
+		$this->username = $username ?? Config::get( 'laravel-24so.username' );
+		$this->password = $password ?? Config::get( 'laravel-24so.password' );
+		$this->api_key  = $api_token ?? Config::get( 'laravel-24so.api_key' );
 		$this->identity = $identity;
 		$this->options  = $options;
+		$this->bucket   = $bucket;
 
 		$this->handleWithExceptions( function () {
 			$this->get_auth();
@@ -104,6 +111,22 @@ class Request
 		}
 	}
 
+	public function callsMade() {
+		return Config::get( 'laravel-24so.api_limit', 7200 ) - $this->getRemainingLimit( $this->soapClient->__getLastResponseHeaders() );
+	}
+
+	public function callLimit() {
+		return Config::get( 'laravel-24so.api_limit', 7200 );
+	}
+
+	public function callsLeft() {
+		return $this->callLimit() - $this->callsMade();
+	}
+
+	protected function updateBucket() {
+		$this->bucket->setCallsLeft( $this->callsLeft() );
+	}
+
 	/**
 	 * Makes a call to the soap service.
 	 *
@@ -115,13 +138,21 @@ class Request
 	 */
 	public function call( $action, array $request, $attempts = 0 ) {
 		return $this->handleWithExceptions( function () use ( $action, $request, $attempts ) {
+			$sleepAttemps = 0;
+			while ( $sleepAttemps < 5 && $this->bucket->getCallsLeft() === 0 ) {
+				// increment delay if calls left remain 0,
+				// technically it could be almost 60 seconds before calls will be > 0 again
+				sleep( 2 + $sleepAttemps );
+				$sleepAttemps++;
+			}
+
 			$service = $this->service();
 			$request = $this->parse_query( $request );
 
 			try {
-				return $service->__soapCall( $action, [ $request ] );
+				$response = $service->__soapCall( $action, [ $request ] );
 			} catch ( \Exception $exception ) {
-				if ( $exception->getCode() === 429 && $attempts <= 3 ) {
+				if ( $this->getResponseCode() === 429 && $attempts <= 3 ) {
 					sleep( $this->retryAfterValue() );
 
 					return $this->call( $action, $request, $attempts + 1 );
@@ -129,6 +160,10 @@ class Request
 
 				throw $exception;
 			}
+
+			$this->updateBucket();
+
+			return $response;
 		} );
 	}
 
@@ -137,9 +172,30 @@ class Request
 			throw new Exception( 'Cannot be called before an API call.' );
 		}
 
-		\Log::debug( 'Last response: ' . $this->soapClient->__getLastResponse() );
+		$headers = $this->soapClient->__getLastResponseHeaders();
+		if ( $this->getRemainingLimit( $headers ) <= 1 ) {
+			preg_match( '/APILimitReset: \K[\d]+-[\d]+-[\d]+T[\d]+:[\d]+:[\d]+Z/', $headers, $retryAfter );
 
-		return 1;
+			return count( $retryAfter ) ? Carbon::parse( $retryAfter[0] )->diffInSeconds( Carbon::now() ) : 3600;
+		}
+
+		return 0;
+	}
+
+	private function getResponseCode() {
+		if ( $this->soapClient->__getLastResponseHeaders() == null ) {
+			throw new Exception( 'Cannot be called before an API call.' );
+		}
+		$headers = $this->soapClient->__getLastResponseHeaders();
+		preg_match( "/HTTP\/\d\.\d\s*\K[\d]+/", $headers, $matches );
+
+		return $matches[0];
+	}
+
+	private function getRemainingLimit( $headers ) {
+		preg_match( '/APILimitRemaining: \K[\d]+/', $headers, $limit );
+
+		return count( $limit ) ? $limit[0] : 7200;
 	}
 
 	/**
