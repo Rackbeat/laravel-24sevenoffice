@@ -2,6 +2,7 @@
 
 namespace KgBot\SO24;
 
+use KgBot\SO24\Contracts\BucketContract;
 use KgBot\SO24\Services\AccountService;
 use KgBot\SO24\Services\AuthenticateService;
 use KgBot\SO24\Services\ClientService;
@@ -22,28 +23,34 @@ class SO24
 	/**
 	 * SO24 constructor.
 	 *
-	 * @param null  $username
-	 * @param null  $password
-	 * @param null  $api_token
-	 * @param null  $identity
-	 * @param array $options
+	 * @param null                $username
+	 * @param null                $password
+	 * @param null                $api_token
+	 * @param null                $identity
+	 * @param array               $options
+	 * @param BucketContract|null $bucket
+	 *
+	 * @throws Exceptions\SO24RequestException
 	 */
-	public function __construct( $username = null, $password = null, $api_token = null, $identity = null, $options = [] ) {
-		$this->request = $this->initRequest( $username, $password, $api_token, $identity, $options );
+	public function __construct( $username = null, $password = null, $api_token = null, $identity = null, $options = [], BucketContract $bucket = null ) {
+		$this->request = $this->initRequest( $username, $password, $api_token, $identity, $options, $bucket );
 	}
 
 	/**
-	 * @param       $username
-	 * @param       $password
-	 * @param       $api_token
-	 * @param       $identity
+	 * @param                     $username
+	 * @param                     $password
+	 * @param                     $api_token
+	 * @param                     $identity
 	 *
-	 * @param array $options
+	 * @param array               $options
+	 *
+	 * @param BucketContract|null $bucket
 	 *
 	 * @return Request
+	 * @throws Exceptions\SO24RequestException
 	 */
-	private function initRequest( $username, $password, $api_token, $identity, $options = [] ): Request {
-		return new Request( $username, $password, $api_token, $identity, $options );
+	private function initRequest( $username, $password, $api_token, $identity, $options = [], BucketContract $bucket = null ): Request {
+		return new Request( $username, $password, $api_token, $identity, $options, $bucket );
 	}
 
 	/**
