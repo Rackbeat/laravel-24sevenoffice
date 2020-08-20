@@ -23,34 +23,32 @@ class SO24
 	/**
 	 * SO24 constructor.
 	 *
-	 * @param null                $username
-	 * @param null                $password
-	 * @param null                $api_token
-	 * @param null                $identity
-	 * @param array               $options
-	 * @param BucketContract|null $bucket
+	 * @param null           $username
+	 * @param null           $password
+	 * @param null           $api_token
+	 * @param BucketContract $bucket
+	 * @param null           $identity
+	 * @param array          $options
 	 *
 	 * @throws Exceptions\SO24RequestException
 	 */
 	public function __construct( $username, $password, $api_token, BucketContract $bucket, $identity = null, $options = [] ) {
-		$this->request = $this->initRequest( $username, $password, $api_token, $identity, $options, $bucket );
+		$this->request = $this->initRequest( $username, $password, $api_token, $bucket, $identity, $options );
 	}
 
 	/**
 	 * @param                     $username
 	 * @param                     $password
 	 * @param                     $api_token
+	 * @param BucketContract      $bucket
 	 * @param                     $identity
-	 *
 	 * @param array               $options
-	 *
-	 * @param BucketContract|null $bucket
 	 *
 	 * @return Request
 	 * @throws Exceptions\SO24RequestException
 	 */
-	private function initRequest( $username, $password, $api_token, $identity, $options = [], BucketContract $bucket = null ): Request {
-		return new Request( $username, $password, $api_token, $identity, $options, $bucket );
+	private function initRequest( $username, $password, $api_token, BucketContract $bucket, $identity, $options = [] ): Request {
+		return new Request( $username, $password, $api_token, $bucket, $identity, $options );
 	}
 
 	/**

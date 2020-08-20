@@ -60,16 +60,16 @@ class Request
 	/**
 	 * Request constructor.
 	 *
-	 * @param null                $username
-	 * @param null                $password
-	 * @param null                $api_token
-	 * @param null                $identity
-	 * @param array               $options
-	 * @param BucketContract|null $bucket
+	 * @param null           $username
+	 * @param null           $password
+	 * @param null           $api_token
+	 * @param BucketContract $bucket
+	 * @param null           $identity
+	 * @param array          $options
 	 *
 	 * @throws SO24RequestException
 	 */
-	public function __construct( $username = null, $password = null, $api_token = null, $identity = null, $options = [], BucketContract $bucket = null ) {
+	public function __construct( $username, $password, $api_token, BucketContract $bucket, $identity = null, $options = [] ) {
 		$this->username = $username ?? Config::get( 'laravel-24so.username' );
 		$this->password = $password ?? Config::get( 'laravel-24so.password' );
 		$this->api_key  = $api_token ?? Config::get( 'laravel-24so.api_key' );
