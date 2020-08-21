@@ -3,8 +3,8 @@
 
 namespace KgBot\SO24\Services;
 
-
-use App\Exceptions\ProductTransferException;
+use KgBot\SO24\Exceptions\ProductGroupTransferException;
+use KgBot\SO24\Exceptions\ProductTransferException;
 
 class ProductService extends BaseService
 {
@@ -80,6 +80,24 @@ class ProductService extends BaseService
 		] )->GetCategoriesResult;
 
 		return ( is_array( $response['Category'] ) ) ? $response['Category'] : $response;
+	}
+
+	public function createCategory( $data ) {
+		$response = $this->request->call( 'SaveCategories', [
+			'categories' => [ 'Category' => $data ],
+		] );
+
+		if ( ! isset( $response->SaveCategoriesResult ) ) {
+			throw new ProductGroupTransferException( json_encode( $response ) );
+		}
+
+		$response = $response->SaveCategoriesResult->Category;
+
+		if ( isset( $response->APIException ) ) {
+			throw new ProductGroupTransferException( '24SO API Exception: ' . $response->APIException->Message, 500 );
+		}
+
+		return (object) $response;
 	}
 
 	/**

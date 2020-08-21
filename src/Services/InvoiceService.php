@@ -4,7 +4,7 @@
 namespace KgBot\SO24\Services;
 
 
-use App\Exceptions\InvoiceTransferException;
+use KgBot\SO24\Exceptions\InvoiceTransferException;
 
 class InvoiceService extends BaseService
 {
