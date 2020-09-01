@@ -133,17 +133,19 @@ class Request
 	 * @param string       $action  The action to call
 	 * @param array|object $request The request to make
 	 *
+	 * @param int          $attempts
+	 *
 	 * @return mixed The result of the call or the exception if errors
-	 * @throws SoapFault
+	 * @throws SO24RequestException
 	 */
 	public function call( $action, array $request, $attempts = 0 ) {
 		return $this->handleWithExceptions( function () use ( $action, $request, $attempts ) {
-			$sleepAttemps = 0;
-			while ( $sleepAttemps < 5 && $this->bucket->getCallsLeft() === 0 ) {
+			$sleepAttempts = 0;
+			while ( $sleepAttempts < 5 && $this->bucket->getCallsLeft() === 0 ) {
 				// increment delay if calls left remain 0,
 				// technically it could be almost 60 seconds before calls will be > 0 again
-				sleep( 2 + $sleepAttemps );
-				$sleepAttemps++;
+				sleep( 2 + $sleepAttempts );
+				$sleepAttempts++;
 			}
 
 			$service = $this->service();
@@ -152,8 +154,8 @@ class Request
 			try {
 				$response = $service->__soapCall( $action, [ $request ] );
 			} catch ( \Exception $exception ) {
-				if ( $this->getResponseCode() === 429 && $attempts <= 3 ) {
-					sleep( $this->retryAfterValue() );
+				if ( $attempts <= 3 && $this->getResponseCode() === 429 ) {
+					sleep( 1 ); // todo check if this will work because we are allowed approx 25 req. per second and 429 error is not our API limit but standard too much requests made (throttling BUT NOT API LIMIT)
 
 					return $this->call( $action, $request, $attempts + 1 );
 				}
