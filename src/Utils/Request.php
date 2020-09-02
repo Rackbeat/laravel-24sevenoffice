@@ -7,6 +7,8 @@ use App\Classes\SO24RestBucket;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Config;
+use KgBot\SO24\Classmaps\GetHoursResult;
+use KgBot\SO24\Classmaps\Hour;
 use KgBot\SO24\Contracts\BucketContract;
 use KgBot\SO24\Exceptions\SO24RequestException;
 use SoapClient;
@@ -282,9 +284,13 @@ class Request
 			'soap_version'       => array_get( $this->options, 'soap_version', SOAP_1_2 ),
 			'trace'              => array_get( $this->options, 'trace', 1 ),
 			'exceptions'         => array_get( $this->options, 'exceptions', 1 ),
-			'connection_timeout' => array_get( $this->options, 'connection_timeout', 360 ),
+			'connection_timeout' => array_get( $this->options, 'connection_timeout', 500 ),
 			'stream_context'     => array_get( $this->options, 'stream_context', stream_context_create( $opts ) ),
 			'cache_wsdl'         => array_get( $this->options, 'cache_wsdl', WSDL_CACHE_NONE ),
+			'classmap'           => [
+				'GetHoursResult' => GetHoursResult::class,
+				'Hour'           => Hour::class,
+			],
 			'keep_alive'         => array_get( $this->options, 'keep_alive', false ),
 		];
 	}
