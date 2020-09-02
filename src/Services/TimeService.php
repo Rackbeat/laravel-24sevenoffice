@@ -10,7 +10,15 @@ class TimeService extends BaseService
 		return 'http://webservices.24sevenoffice.com/timesheet/v001/timeservice.asmx?WSDL';
 	}
 
-	public function hours( $request = [] ) {
-		return $this->request->call( 'GetHours', [ 'hs' => $request ] );
+	protected function getIndexMethod(): string {
+		return 'GetHours';
+	}
+
+	protected function getIndexReturnName() {
+		return [];
+	}
+
+	protected function getIndexSearchName() {
+		return 'hs';
 	}
 }

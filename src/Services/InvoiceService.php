@@ -12,16 +12,60 @@ class InvoiceService extends BaseService
 		return 'http://api.24sevenoffice.com/Economy/InvoiceOrder/V001/InvoiceService.asmx?WSDL';
 	}
 
-	/**
-	 * @param array $query
-	 *
-	 * @return array|mixed
-	 * @throws \SoapFault
-	 */
-	public function get( $query = [] ) {
-		$response = (array) $this->request->call( 'GetInvoices', $query )->GetInvoicesResult;
+	protected function getIndexMethod(): string {
+		return 'GetInvoices';
+	}
 
-		return ( isset( $response['InvoiceOrder'] ) && is_array( $response['InvoiceOrder'] ) ) ? $response['InvoiceOrder'] : $response;
+	protected function getIndexReturnName() {
+		return [ 'invoiceReturnProperties', 'rowReturnProperties' ];
+	}
+
+	protected function getIndexSearchName() {
+		return 'searchParams';
+	}
+
+	protected function getRowReturnPropertiesReturnQuery() {
+		return [
+			'ProductId',
+			'ProductNo',
+			'RowId',
+			'VatRate',
+			'Price',
+			'Name',
+			'DiscountRate',
+			'Quantity',
+			'QuantityDelivered',
+			'QuantityOrdered',
+			'QuantityRest',
+			'Cost',
+			'InPrice',
+			'Type',
+		];
+	}
+
+	protected function getInvoiceReturnPropertiesReturnQuery() {
+		return [
+			'OrderId',
+			'CustomerId',
+			'Addresses',
+			'OrderStatus',
+			'InvoiceId',
+			'DateOrdered',
+			'DateInvoiced',
+			'PaymentTime',
+			'OurReference',
+			'ReferenceInvoiceId',
+			'ReferenceOrderId',
+			'OrderTotalIncVat',
+			'OrderTotalVat',
+			'PaymentAmount',
+			'InvoiceEmailAddress',
+			'InvoiceRows',
+			'DeliveryDate',
+			'Currency',
+			'DeliveryMethod',
+			'YourReference',
+		];
 	}
 
 	public function find( $id, array $request = [] ) {
@@ -33,53 +77,7 @@ class InvoiceService extends BaseService
 			];
 		}
 
-		if ( ! isset( $request['invoiceReturnProperties'] ) ) {
-			$request['invoiceReturnProperties'] = [
-				'OrderId',
-				'CustomerId',
-				'Addresses',
-				'OrderStatus',
-				'InvoiceId',
-				'DateOrdered',
-				'DateInvoiced',
-				'PaymentTime',
-				'OurReference',
-				'ReferenceInvoiceId',
-				'ReferenceOrderId',
-				'OrderTotalIncVat',
-				'OrderTotalVat',
-				'PaymentAmount',
-				'InvoiceEmailAddress',
-				'InvoiceRows',
-				'DeliveryDate',
-				'Currency',
-				'DeliveryMethod',
-				'YourReference',
-			];
-		}
-
-		if ( ! isset( $request['rowReturnProperties'] ) ) {
-			$request['rowReturnProperties'] = [
-				'ProductId',
-				'ProductNo',
-				'RowId',
-				'VatRate',
-				'Price',
-				'Name',
-				'DiscountRate',
-				'Quantity',
-				'QuantityDelivered',
-				'QuantityOrdered',
-				'QuantityRest',
-				'Cost',
-				'InPrice',
-				'Type',
-			];
-		}
-
-		$response = (array) $this->get( $request );
-
-		return $response['InvoiceOrder'] ?? $response;
+		return $this->get( $request );
 	}
 
 	/**

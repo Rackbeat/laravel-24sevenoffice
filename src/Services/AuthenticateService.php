@@ -10,6 +10,18 @@ class AuthenticateService extends BaseService
 		return 'http://api.24sevenoffice.com/authenticate/v001/authenticate.asmx?WSDL';
 	}
 
+	protected function getIndexMethod(): string {
+		return 'GetIdentities';
+	}
+
+	protected function getIndexReturnName() {
+		[];
+	}
+
+	protected function getIndexSearchName() {
+		return [];
+	}
+
 	/**
 	 * @param array $request
 	 *
@@ -17,8 +29,6 @@ class AuthenticateService extends BaseService
 	 * @throws \SoapFault
 	 */
 	public function identities( $request = [] ) {
-		$response = $this->request->call( 'GetIdentities', $request )->GetIdentitiesResult;
-
-		return ( isset( $response->Identity ) && is_array( $response->Identity ) ) ? $response->Identity : $response;
+		return $this->request->call( 'GetIdentities', $request )->getResults();
 	}
 }

@@ -4,32 +4,44 @@
 namespace KgBot\SO24\Services;
 
 
+use Illuminate\Support\Collection;
+use KgBot\SO24\Classmaps\AccountService\AccountData;
+use KgBot\SO24\Classmaps\AccountService\BundleList;
+
 class AccountService extends BaseService
 {
 	public function setUp(): string {
 		return 'https://webservices.24sevenoffice.com/economy/accountV002/Accountservice.asmx?WSDL';
 	}
 
+	protected function getIndexMethod(): string {
+		return 'GetAccountList';
+	}
+
+	protected function getIndexReturnName() {
+		return [];
+	}
+
+	protected function getIndexSearchName() {
+		return [];
+	}
+
 	/**
-	 * @return array
+	 * @return Collection|AccountData
 	 * @throws \SoapFault
 	 */
-	public function getAccountList(): array {
-		$response = $this->request->call( 'GetAccountList', [] )->GetAccountListResult;
-
-		$response = $response->AccountData ?? [];
-
-		return is_array( $response ) ? $response : [ $response ];
+	public function getAccountList() {
+		return $this->request->call( 'GetAccountList', [] )->getResults();
 	}
 
 	/**
 	 * @param $data
 	 *
-	 * @return mixed
-	 * @throws \SoapFault
+	 * @return BundleList
+	 * @throws \KgBot\SO24\Exceptions\SO24RequestException
 	 */
-	public function SaveBundleList( $data ) {
-		return $this->request->call( 'SaveBundleList', $data )->SaveBundleListResult;
+	public function SaveBundleList( $data ): BundleList {
+		return $this->request->call( 'SaveBundleList', $data )->getResults();
 	}
 
 	/**
@@ -47,6 +59,6 @@ class AccountService extends BaseService
 	 * @throws \SoapFault
 	 */
 	public function GetTypeList() {
-		return $this->request->call( 'GetTypeList', [] )->GetTypeListResult;
+		return $this->request->call( 'GetTypeList', [] )->getResults();
 	}
 }

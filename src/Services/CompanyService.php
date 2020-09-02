@@ -4,32 +4,37 @@
 namespace KgBot\SO24\Services;
 
 
+use KgBot\SO24\Classmaps\CompanyService\Company;
+
 class CompanyService extends BaseService
 {
 	public function setUp(): string {
 		return 'http://api.24sevenoffice.com/CRM/Company/V001/CompanyService.asmx?WSDL';
 	}
 
-	/**
-	 * @param array $request
-	 *
-	 * @return array|mixed
-	 * @throws \SoapFault
-	 */
-	public function get( $request = [] ) {
-		$response = (array) $this->request->call( 'GetCompanies', $request )->GetCompaniesResult;
+	protected function getIndexMethod(): string {
+		return 'GetCompanies';
+	}
 
-		return ( isset( $response['Company'] ) && is_array( $response['Company'] ) ) ? $response['Company'] : $response;
+	protected function getIndexReturnName() {
+		return 'returnProperties';
+	}
+
+	protected function getIndexSearchName() {
+		return 'searchParams';
+	}
+
+	protected function getReturnPropertiesReturnQuery() {
+		return [ 'Type', 'EmailAddresses', 'PhoneNumbers', 'Addresses', 'Name', 'ExternalId', 'Id', 'OrganizationNumber', 'CurrencyId' . 'InvoiceLanguage' ];
 	}
 
 	/**
 	 * @param       $id
 	 * @param array $request
 	 *
-	 * @return array|mixed
-	 * @throws \SoapFault
+	 * @return Company
 	 */
-	public function find( $id, array $request = [] ) {
+	public function find( $id, array $request = [] ): Company {
 		if ( isset( $request['searchParams'] ) ) {
 			$request['searchParams']['CompanyId'] = $id;
 		} else {
@@ -38,27 +43,19 @@ class CompanyService extends BaseService
 			];
 		}
 
-		if ( ! isset( $request['returnProperties'] ) ) {
-			$request['returnProperties'] = [ 'Type', 'EmailAddresses', 'PhoneNumbers', 'Addresses', 'Name', 'ExternalId', 'Id', 'OrganizationNumber', 'CurrencyId' . 'InvoiceLanguage' ];
-		}
-
-		$response = (array) $this->get( $request );
-
-		return $response['Company'] ?? $response;
+		return $this->get( $request )->getResults();
 	}
 
 	/**
 	 * @param array $data
 	 *
-	 * @return mixed
+	 * @return Company
 	 * @throws \SoapFault
 	 */
-	public function createOrUpdate( $data = [] ) {
+	public function createOrUpdate( $data = [] ): Company {
 
-		$response = (object) $this->request->call( 'SaveCompanies', [
+		return $this->request->call( 'SaveCompanies', [
 			'companies' => [ 'Company' => $data ],
-		] );
-
-		return (object) $response->SaveCompaniesResult->Company;
+		] )->getResults();
 	}
 }

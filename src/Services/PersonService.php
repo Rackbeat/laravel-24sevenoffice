@@ -10,9 +10,15 @@ class PersonService extends BaseService
 		return 'http://webservices.24sevenoffice.com/CRM/Contact/PersonService.asmx?WSDL';
 	}
 
-	public function get( $request = [] ) {
-		$response = $this->request->call( 'GetPersons', [ 'personSearch' => $request ] )->GetPersonsResult->PersonItem;
+	protected function getIndexMethod(): string {
+		return 'GetPersons';
+	}
 
-		return is_array( $response ) ? $response : [ $response ];
+	protected function getIndexSearchName() {
+		return 'personSearch';
+	}
+
+	protected function getIndexReturnName() {
+		return [];
 	}
 }

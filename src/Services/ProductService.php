@@ -3,6 +3,9 @@
 
 namespace KgBot\SO24\Services;
 
+use KgBot\SO24\Classmaps\ProductService\Categories\Category;
+use KgBot\SO24\Classmaps\ProductService\Product;
+use KgBot\SO24\Classmaps\SingleResource;
 use KgBot\SO24\Exceptions\ProductGroupTransferException;
 use KgBot\SO24\Exceptions\ProductTransferException;
 
@@ -12,19 +15,30 @@ class ProductService extends BaseService
 		return 'http://api.24sevenoffice.com/Logistics/Product/V001/ProductService.asmx?WSDL';
 	}
 
-	/**
-	 * @param $request
-	 *
-	 * @return mixed
-	 * @throws \SoapFault
-	 */
-	public function get( $request ) {
-		$response = (array) $this->request->call( 'GetProducts', $request )->GetProductsResult;
-
-		return ( isset( $response['Product'] ) && is_array( $response['Product'] ) ) ? $response['Product'] : $response;
+	protected function getIndexMethod(): string {
+		return 'GetProducts';
 	}
 
-	public function find( $id, array $request = [] ) {
+	protected function getIndexReturnName() {
+		return 'returnProperties';
+	}
+
+	protected function getIndexSearchName() {
+		return "searchParams";
+	}
+
+	protected function getReturnPropertiesReturnQuery() {
+		return [ 'Name', 'No', 'Price', 'Id', 'CategoryId', 'InPrice' ];
+	}
+
+	/**
+	 * @param       $id
+	 * @param array $request
+	 *
+	 * @return SingleResource|null
+	 * @throws \SoapFault
+	 */
+	public function find( $id, array $request = [] ): SingleResource {
 		if ( isset( $request['searchParams'] ) ) {
 			$request['searchParams']['Id'] = $id;
 		} else {
@@ -33,71 +47,58 @@ class ProductService extends BaseService
 			];
 		}
 
-		if ( ! isset( $request['returnProperties'] ) ) {
-			$request['returnProperties'] = [ 'Name', 'No', 'Price', 'Id', 'CategoryId', 'InPrice' ];
-		}
-
-		$response = (array) $this->get( $request );
-
-		return $response['Product'] ?? $response;
+		return $this->get( $request );
 	}
 
 	/**
 	 * @param array $data
 	 *
-	 * @return mixed
+	 * @return Product
 	 * @throws ProductTransferException
 	 * @throws \SoapFault
 	 */
-	public function createOrUpdate( $data = [] ) {
+	public function createOrUpdate( $data = [] ): Product {
 		$response = $this->request->call( 'SaveProducts', [
 			'products' => [ 'Product' => $data ],
-		] );
+		] )->getResults();
 
-		if ( ! isset( $response->SaveProductsResult ) ) {
-			throw new ProductTransferException( json_encode( $response ) );
-		}
-
-		$response = $response->SaveProductsResult->Product;
-
-		if ( isset( $response->APIException ) ) {
+		if ( isset( $response->APIException ) && ! empty( $response->APIException ) ) {
 			throw new ProductTransferException( '24SO API Exception: ' . $response->APIException->Message, 500 );
 		}
 
-		return (object) $response;
+		return $response;
 	}
 
 	/**
 	 * @param array $returnProperties
 	 *
-	 * @return array
-	 * @throws \SoapFault
+	 * @return mixed
+	 * @throws \KgBot\SO24\Exceptions\SO24RequestException
 	 */
-	public function getCategories( $returnProperties = [] ): array {
+	public function getCategories( $returnProperties = [] ) {
 
-		$response = (array) $this->request->call( 'GetCategories', [
+		return $this->request->call( 'GetCategories', [
 			'returnProperties' => $returnProperties
-		] )->GetCategoriesResult;
-
-		return ( is_array( $response['Category'] ) ) ? $response['Category'] : $response;
+		] )->getResults();
 	}
 
-	public function createCategory( $data ) {
+	/**
+	 * @param $data
+	 *
+	 * @return Category
+	 * @throws ProductGroupTransferException
+	 * @throws \KgBot\SO24\Exceptions\SO24RequestException
+	 */
+	public function createCategory( $data ): Category {
 		$response = $this->request->call( 'SaveCategories', [
 			'categories' => [ 'Category' => $data ],
-		] );
-
-		if ( ! isset( $response->SaveCategoriesResult ) ) {
-			throw new ProductGroupTransferException( json_encode( $response ) );
-		}
-
-		$response = $response->SaveCategoriesResult->Category;
+		] )->getResults();
 
 		if ( isset( $response->APIException ) ) {
 			throw new ProductGroupTransferException( '24SO API Exception: ' . $response->APIException->Message, 500 );
 		}
 
-		return (object) $response;
+		return $response;
 	}
 
 	/**

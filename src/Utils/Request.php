@@ -2,13 +2,57 @@
 
 namespace KgBot\SO24\Utils;
 
-use App\Classes\ShopifyRestBucket;
-use App\Classes\SO24RestBucket;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
-use KgBot\SO24\Classmaps\GetHoursResult;
-use KgBot\SO24\Classmaps\Hour;
+use KgBot\SO24\Classmaps\AccountService\AccountData;
+use KgBot\SO24\Classmaps\AccountService\BundleList;
+use KgBot\SO24\Classmaps\AccountService\GetAccountListResponse;
+use KgBot\SO24\Classmaps\AccountService\GetTypeListResponse;
+use KgBot\SO24\Classmaps\AccountService\SaveBundleListResponse;
+use KgBot\SO24\Classmaps\AccountService\TypeData;
+use KgBot\SO24\Classmaps\Addresses\Address;
+use KgBot\SO24\Classmaps\Addresses\Addresses;
+use KgBot\SO24\Classmaps\AuthenticateService\Client;
+use KgBot\SO24\Classmaps\AuthenticateService\GetIdentitiesResponse;
+use KgBot\SO24\Classmaps\AuthenticateService\Identity;
+use KgBot\SO24\Classmaps\AuthenticateService\User;
+use KgBot\SO24\Classmaps\ClientService\AccountingGroup;
+use KgBot\SO24\Classmaps\ClientService\Currency;
+use KgBot\SO24\Classmaps\ClientService\EmailAddress;
+use KgBot\SO24\Classmaps\ClientService\FaxNumber;
+use KgBot\SO24\Classmaps\ClientService\GetClientInformationResponse;
+use KgBot\SO24\Classmaps\ClientService\GetCurrencyListResponse;
+use KgBot\SO24\Classmaps\ClientService\GetTypeGroupListResponse;
+use KgBot\SO24\Classmaps\ClientService\PhoneNumber;
+use KgBot\SO24\Classmaps\CompanyService\Company;
+use KgBot\SO24\Classmaps\CompanyService\CompanyMap;
+use KgBot\SO24\Classmaps\CompanyService\GetCompaniesResponse;
+use KgBot\SO24\Classmaps\CompanyService\Relation;
+use KgBot\SO24\Classmaps\CompanyService\SaveCompanyResponse;
+use KgBot\SO24\Classmaps\Dimension;
+use KgBot\SO24\Classmaps\InvoiceService\ChangeState;
+use KgBot\SO24\Classmaps\InvoiceService\DeliveryMethod;
+use KgBot\SO24\Classmaps\InvoiceService\GetInvoicesResponse;
+use KgBot\SO24\Classmaps\InvoiceService\GetInvoicesResult;
+use KgBot\SO24\Classmaps\InvoiceService\InvoiceOrder;
+use KgBot\SO24\Classmaps\InvoiceService\InvoiceRow;
+use KgBot\SO24\Classmaps\InvoiceService\RowType;
+use KgBot\SO24\Classmaps\PersonService\GetPersonsResponse;
+use KgBot\SO24\Classmaps\PersonService\PersonItem;
+use KgBot\SO24\Classmaps\PersonService\RelationData;
+use KgBot\SO24\Classmaps\ProductService\Categories\Category;
+use KgBot\SO24\Classmaps\ProductService\Categories\GetCategoriesResponse;
+use KgBot\SO24\Classmaps\ProductService\Categories\SaveCategoriesResponse;
+use KgBot\SO24\Classmaps\ProductService\GetProductsResponse;
+use KgBot\SO24\Classmaps\ProductService\GetProductsResult;
+use KgBot\SO24\Classmaps\ProductService\Product;
+use KgBot\SO24\Classmaps\ProductService\SaveProductsResponse;
+use KgBot\SO24\Classmaps\TimeService\GetHoursResponse;
+use KgBot\SO24\Classmaps\TimeService\GetHoursResult;
+use KgBot\SO24\Classmaps\TimeService\Hour;
+use KgBot\SO24\Classmaps\UserDefinedDimensions;
 use KgBot\SO24\Contracts\BucketContract;
 use KgBot\SO24\Exceptions\SO24RequestException;
 use SoapClient;
@@ -156,11 +200,11 @@ class Request
 			try {
 				$response = $service->__soapCall( $action, [ $request ] );
 			} catch ( \Exception $exception ) {
-				if ( $attempts <= 3 && $this->getResponseCode() === 429 ) {
+				/*if ( $attempts <= 3 && $this->getResponseCode() === 429 ) {
 					sleep( 1 ); // todo check if this will work because we are allowed approx 25 req. per second and 429 error is not our API limit but standard too much requests made (throttling BUT NOT API LIMIT)
 
 					return $this->call( $action, $request, $attempts + 1 );
-				}
+				}*/
 
 				throw $exception;
 			}
@@ -268,30 +312,85 @@ class Request
 	public function getOptions(): array {
 		$opts = [
 			'ssl'  => [
-				'verify_peer'       => array_get( $this->options, 'verify_peer', false ),
-				'verify_peer_name'  => array_get( $this->options, 'verify_peer_name', false ),
-				'allow_self_signed' => array_get( $this->options, 'allow_self_signed', true )
+				'verify_peer'       => Arr::get( $this->options, 'verify_peer', false ),
+				'verify_peer_name'  => Arr::get( $this->options, 'verify_peer_name', false ),
+				'allow_self_signed' => Arr::get( $this->options, 'allow_self_signed', true )
 			],
 			'http' => [
-				'user_agent' => array_get( $this->options, 'user_agent', config( 'laravel-24so.user_agent' ) )
+				'user_agent' => Arr::get( $this->options, 'user_agent', config( 'laravel-24so.user_agent' ) )
 			]
 		];
 
 		return [
-			'encoding'           => array_get( $this->options, 'encoding', 'UTF-8' ),
-			'verifypeer'         => array_get( $this->options, 'verifypeer', false ),
-			'verifyhost'         => array_get( $this->options, 'verifyhost', false ),
-			'soap_version'       => array_get( $this->options, 'soap_version', SOAP_1_2 ),
-			'trace'              => array_get( $this->options, 'trace', 1 ),
-			'exceptions'         => array_get( $this->options, 'exceptions', 1 ),
-			'connection_timeout' => array_get( $this->options, 'connection_timeout', 500 ),
-			'stream_context'     => array_get( $this->options, 'stream_context', stream_context_create( $opts ) ),
-			'cache_wsdl'         => array_get( $this->options, 'cache_wsdl', WSDL_CACHE_NONE ),
+			'encoding'           => Arr::get( $this->options, 'encoding', 'UTF-8' ),
+			'verifypeer'         => Arr::get( $this->options, 'verifypeer', false ),
+			'verifyhost'         => Arr::get( $this->options, 'verifyhost', false ),
+			'soap_version'       => Arr::get( $this->options, 'soap_version', SOAP_1_2 ),
+			'trace'              => Arr::get( $this->options, 'trace', 1 ),
+			'exceptions'         => Arr::get( $this->options, 'exceptions', 1 ),
+			'connection_timeout' => Arr::get( $this->options, 'connection_timeout', 500 ),
+			'stream_context'     => Arr::get( $this->options, 'stream_context', stream_context_create( $opts ) ),
+			'cache_wsdl'         => Arr::get( $this->options, 'cache_wsdl', WSDL_CACHE_NONE ),
 			'classmap'           => [
-				'GetHoursResult' => GetHoursResult::class,
-				'Hour'           => Hour::class,
+				// Time Service
+				'GetHoursResponse'             => GetHoursResponse::class,
+				'GetHoursResult'               => GetHoursResult::class,
+				'Hour'                         => Hour::class,
+				// Products
+				'GetProductsResponse'          => GetProductsResponse::class,
+				'GetProductsResult'            => GetProductsResult::class,
+				'Product'                      => Product::class,
+				'SaveProductsResponse'         => SaveProductsResponse::class,
+				// Categories
+				'GetCategoriesResponse'        => GetCategoriesResponse::class,
+				'SaveCategoriesResponse'       => SaveCategoriesResponse::class,
+				// Invoices
+				'GetInvoicesResponse'          => GetInvoicesResponse::class,
+				'GetInvoicesResult'            => GetInvoicesResult::class,
+				'InvoiceOrder'                 => InvoiceOrder::class,
+				'InvoiceRow'                   => InvoiceRow::class,
+				'RowType'                      => RowType::class,
+				'ChangeState'                  => ChangeState::class,
+				'DeliveryMethod'               => DeliveryMethod::class,
+				'Dimension'                    => Dimension::class,
+				'UserDefinedDimensions'        => UserDefinedDimensions::class,
+				'Category'                     => Category::class,
+				// Addresses
+				'Addresses'                    => Addresses::class,
+				'Address'                      => Address::class,
+				// Account Service
+				'GetAccountListResponse'       => GetAccountListResponse::class,
+				'AccountData'                  => AccountData::class,
+				'SaveBundleListResponse'       => SaveBundleListResponse::class,
+				'BundleList'                   => BundleList::class,
+				'GetTypeListResponse'          => GetTypeListResponse::class,
+				'TypeData'                     => TypeData::class,
+				// Authenticate Service
+				'GetIdentitiesResponse'        => GetIdentitiesResponse::class,
+				'Identity'                     => Identity::class,
+				'User'                         => User::class,
+				'Client'                       => Client::class,
+				// Client Service
+				'GetCurrencyListResponse'      => GetCurrencyListResponse::class,
+				'GetClientInformationResponse' => GetClientInformationResponse::class,
+				'Currency'                     => Currency::class,
+				'EmailAddress'                 => EmailAddress::class,
+				'PhoneNumber'                  => PhoneNumber::class,
+				'FaxNumber'                    => FaxNumber::class,
+				'AccountingGroup'              => AccountingGroup::class,
+				'GetTypeGroupListResponse'     => GetTypeGroupListResponse::class,
+				// Company Service
+				'GetCompaniesResponse'         => GetCompaniesResponse::class,
+				'Company'                      => Company::class,
+				'CompanyMap'                   => CompanyMap::class,
+				'Relation'                     => Relation::class,
+				'SaveCompanyResponse'          => SaveCompanyResponse::class,
+				// Person Service
+				'GetPersonsResponse'           => GetPersonsResponse::class,
+				'PersonItem'                   => PersonItem::class,
+				'RelationData'                 => RelationData::class,
 			],
-			'keep_alive'         => array_get( $this->options, 'keep_alive', false ),
+			'keep_alive'         => Arr::get( $this->options, 'keep_alive', false ),
 		];
 	}
 }
