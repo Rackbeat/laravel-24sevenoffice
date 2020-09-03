@@ -120,7 +120,17 @@ class InvoiceOrder extends SingleResource
 	public $CustomerDeliveryId;
 
 	public function getInvoiceRows() {
-		return collect( $this->InvoiceRows );
+		$rows = $this->InvoiceRows;
+
+		if ( isset( $rows->InvoiceRow ) ) {
+			if ( is_array( $rows->InvoiceRow ) ) {
+				return collect( $rows->InvoiceRow );
+			}
+
+			return collect( [ $rows->InvoiceRow ] );
+		}
+
+		return collect();
 	}
 
 	public function getAddresses() {
