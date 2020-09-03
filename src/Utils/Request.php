@@ -52,6 +52,8 @@ use KgBot\SO24\Classmaps\ProductService\SaveProductsResponse;
 use KgBot\SO24\Classmaps\TimeService\GetHoursResponse;
 use KgBot\SO24\Classmaps\TimeService\GetHoursResult;
 use KgBot\SO24\Classmaps\TimeService\Hour;
+use KgBot\SO24\Classmaps\TransactionService\GetTransactionsResponse;
+use KgBot\SO24\Classmaps\TransactionService\Transaction;
 use KgBot\SO24\Classmaps\UserDefinedDimensions;
 use KgBot\SO24\Contracts\BucketContract;
 use KgBot\SO24\Exceptions\SO24RequestException;
@@ -389,6 +391,9 @@ class Request
 				'GetPersonsResponse'           => GetPersonsResponse::class,
 				'PersonItem'                   => PersonItem::class,
 				'RelationData'                 => RelationData::class,
+				// Transaction Service
+				'GetTransactionsResponse'      => GetTransactionsResponse::class,
+				'Transaction'                  => Transaction::class,
 			],
 			'keep_alive'         => Arr::get( $this->options, 'keep_alive', false ),
 		];
