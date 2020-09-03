@@ -29,10 +29,6 @@ class TransactionService extends BaseService
 	 * @throws \SoapFault
 	 */
 	public function GetAggregated( $query = [] ): array {
-		$response = $this->request->call( 'GetAggregated', $query )->GetAggregatedResult;
-
-		$response = $response->AggregatedData ?? [];
-
-		return is_array( $response ) ? $response : [ $response ];
+		return $this->request->call( 'GetAggregated', $query )->getResults();
 	}
 }

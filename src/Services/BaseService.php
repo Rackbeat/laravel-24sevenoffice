@@ -25,7 +25,13 @@ abstract class BaseService implements ServiceInterface
 		throw new \Exception( 'You must override this method in your child classes' );
 	}
 
-	public function get( $request ) {
+	/**
+	 * @param array $request
+	 *
+	 * @return mixed
+	 * @throws \KgBot\SO24\Exceptions\SO24RequestException
+	 */
+	public function get( array $request = [] ) {
 		$request = $this->getReturnQuery( $request );
 
 		return $this->request->call( $this->getIndexMethod(), $request )->getResults();
