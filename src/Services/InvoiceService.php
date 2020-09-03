@@ -4,6 +4,7 @@
 namespace KgBot\SO24\Services;
 
 
+use Illuminate\Support\Collection;
 use KgBot\SO24\Exceptions\InvoiceTransferException;
 
 class InvoiceService extends BaseService
@@ -77,7 +78,18 @@ class InvoiceService extends BaseService
 			];
 		}
 
-		return $this->get( $request );
+		$response = $this->get( $request );
+
+		if ( is_countable( $response ) ) {
+			if ( $response instanceof Collection ) {
+				return $response->first();
+			}
+			if ( isset( $response[0] ) ) {
+				return $response[0];
+			}
+		}
+
+		return $response;
 	}
 
 	/**
