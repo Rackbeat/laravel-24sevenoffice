@@ -26,6 +26,10 @@ abstract class BaseResponse implements ResponseInterface
 			return collect( $results );
 		}
 
+		if ( $results === null ) {
+			return collect();
+		}
+
 		return $results;
 	}
 }
