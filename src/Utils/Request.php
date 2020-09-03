@@ -386,7 +386,7 @@ class Request
 				'Company'                      => Company::class,
 				'CompanyMap'                   => CompanyMap::class,
 				'Relation'                     => Relation::class,
-				'SaveCompanyResponse'          => SaveCompanyResponse::class,
+				'SaveCompaniesResponse'        => SaveCompanyResponse::class,
 				// Person Service
 				'GetPersonsResponse'           => GetPersonsResponse::class,
 				'PersonItem'                   => PersonItem::class,
