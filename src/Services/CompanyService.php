@@ -43,7 +43,7 @@ class CompanyService extends BaseService
 			];
 		}
 
-		return $this->get( $request )->getResults();
+		return $this->get( $request );
 	}
 
 	/**
