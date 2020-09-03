@@ -34,7 +34,13 @@ abstract class BaseService implements ServiceInterface
 	public function get( array $request = [] ) {
 		$request = $this->getReturnQuery( $request );
 
-		return $this->request->call( $this->getIndexMethod(), $request )->getResults();
+		$response = $this->request->call( $this->getIndexMethod(), $request )->getResults();
+
+		if ( is_countable( $response ) ) {
+			return $response;
+		}
+
+		return collect( [ $response ] );
 	}
 
 	/**
