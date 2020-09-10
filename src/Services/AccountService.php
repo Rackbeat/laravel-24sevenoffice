@@ -6,7 +6,6 @@ namespace KgBot\SO24\Services;
 
 use Illuminate\Support\Collection;
 use KgBot\SO24\Classmaps\AccountService\AccountData;
-use KgBot\SO24\Classmaps\AccountService\BundleList;
 
 class AccountService extends BaseService
 {
@@ -37,10 +36,10 @@ class AccountService extends BaseService
 	/**
 	 * @param $data
 	 *
-	 * @return BundleList
+	 * @return mixed
 	 * @throws \KgBot\SO24\Exceptions\SO24RequestException
 	 */
-	public function SaveBundleList( $data ): BundleList {
+	public function SaveBundleList( $data ) {
 		return $this->request->call( 'SaveBundleList', $data )->getResults();
 	}
 
