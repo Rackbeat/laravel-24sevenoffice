@@ -22,7 +22,7 @@ class Company extends SingleResource
 	/** @var string */
 	public $NickName;
 	/** @var Collection */
-	public $Addresses;
+	private $Addresses;
 	/** @var Collection */
 	private $PhoneNumbers;
 	/** @var Collection */
