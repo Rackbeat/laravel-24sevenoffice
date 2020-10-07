@@ -39,7 +39,7 @@ class ProductService extends BaseService
 	 * @return SingleResource|null
 	 * @throws \SoapFault
 	 */
-	public function find( $id, array $request = [] ): SingleResource {
+	public function find( $id, array $request = [] ): ?SingleResource {
 		if ( isset( $request['searchParams'] ) ) {
 			$request['searchParams']['Id'] = $id;
 		} else {
@@ -84,7 +84,7 @@ class ProductService extends BaseService
 	/**
 	 * @param array $returnProperties
 	 *
-	 * @return mixed
+	 * @return Collection|Category
 	 * @throws \KgBot\SO24\Exceptions\SO24RequestException
 	 */
 	public function getCategories( $returnProperties = [] ) {
