@@ -63,6 +63,6 @@ class Transaction extends SingleResource
 	public $VatDividend;
 
 	public function getDimensions() {
-		return collect( $this->Dimensions );
+		return collect( $this->Dimensions ?? [] );
 	}
 }

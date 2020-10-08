@@ -29,10 +29,10 @@ class Relation extends SingleResource
 	public $Fax;
 
 	public function getPhoneNumbers() {
-		return collect( $this->PhoneNumbers );
+		return collect( $this->PhoneNumbers ?? [] );
 	}
 
 	public function getEmailsAddresses() {
-		return collect( $this->EmailAddresses );
+		return collect( $this->EmailAddresses ?? [] );
 	}
 }

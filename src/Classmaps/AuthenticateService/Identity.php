@@ -27,6 +27,6 @@ class Identity extends SingleResource
 	public $IsDisabled;
 
 	public function getServers() {
-		return collect( $this->Servers );
+		return collect( $this->Servers ?? [] );
 	}
 }

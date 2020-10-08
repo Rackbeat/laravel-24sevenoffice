@@ -63,6 +63,6 @@ class PersonItem extends SingleResource
 	public $IsPrivate;
 
 	public function getRelationData() {
-		return collect( $this->RelationData );
+		return collect( $this->RelationData ?? [] );
 	}
 }

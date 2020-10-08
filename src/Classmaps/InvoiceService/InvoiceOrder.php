@@ -134,10 +134,10 @@ class InvoiceOrder extends SingleResource
 	}
 
 	public function getAddresses() {
-		return collect( $this->Addresses );
+		return collect( $this->Addresses ?? [] );
 	}
 
 	public function getUserDefinedDimensions() {
-		return collect( $this->UserDefinedDimensions );
+		return collect( $this->UserDefinedDimensions ?? [] );
 	}
 }

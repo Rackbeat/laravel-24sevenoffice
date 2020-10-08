@@ -23,6 +23,6 @@ class AggregatedData extends SingleResource
 	public $AccountNo;
 
 	public function getPeriods() {
-		return collect( $this->Periods );
+		return collect( $this->Periods ?? [] );
 	}
 }

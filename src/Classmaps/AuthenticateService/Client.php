@@ -51,18 +51,18 @@ class Client extends SingleResource
 	public $ResellerName;
 
 	public function getAddressList() {
-		return collect( $this->AddressList );
+		return collect( $this->AddressList ?? [] );
 	}
 
 	public function getFaxNumberList() {
-		return collect( $this->FaxNumberList );
+		return collect( $this->FaxNumberList ?? [] );
 	}
 
 	public function getPhoneNumberList() {
-		return collect( $this->PhoneNumberList );
+		return collect( $this->PhoneNumberList ?? [] );
 	}
 
 	public function getEmailAddressList() {
-		return collect( $this->EmailAddressList );
+		return collect( $this->EmailAddressList ?? [] );
 	}
 }

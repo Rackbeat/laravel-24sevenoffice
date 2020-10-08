@@ -109,22 +109,22 @@ class Company extends SingleResource
 	public $Private;
 
 	public function getAddresses() {
-		return collect( $this->Addresses );
+		return collect( $this->Addresses ?? [] );
 	}
 
 	public function getPhoneNumbers() {
-		return collect( $this->PhoneNumbers );
+		return collect( $this->PhoneNumbers ?? [] );
 	}
 
 	public function getEmailAddresses() {
-		return collect( $this->EmailAddresses );
+		return collect( $this->EmailAddresses ?? [] );
 	}
 
 	public function getRelations() {
-		return collect( $this->Relations );
+		return collect( $this->Relations ?? [] );
 	}
 
 	public function getMaps() {
-		return collect( $this->Maps );
+		return collect( $this->Maps ?? [] );
 	}
 }
