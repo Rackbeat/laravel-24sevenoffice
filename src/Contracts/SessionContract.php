@@ -8,9 +8,20 @@ interface SessionContract
 {
 	public function __construct( string $sessionKey );
 
-	public function setSessionId( $sessionId );
+	/**
+	 * @param string $sessionId
+	 *
+	 * @return void
+	 */
+	public function setSessionId( string $sessionId ): void;
 
-	public function getSessionId();
+	/**
+	 * @return string|null
+	 */
+	public function getSessionId(): ?string;
 
-	public function getSessionKey();
+	/**
+	 * @return string
+	 */
+	public function getSessionKey(): string;
 }
