@@ -3,6 +3,7 @@
 namespace KgBot\SO24;
 
 use KgBot\SO24\Contracts\BucketContract;
+use KgBot\SO24\Contracts\SessionContract;
 use KgBot\SO24\Services\AccountService;
 use KgBot\SO24\Services\AuthenticateService;
 use KgBot\SO24\Services\ClientService;
@@ -24,17 +25,18 @@ class SO24
 	/**
 	 * SO24 constructor.
 	 *
-	 * @param null           $username
-	 * @param null           $password
-	 * @param null           $api_token
-	 * @param BucketContract $bucket
-	 * @param null           $identity
-	 * @param array          $options
+	 * @param null            $username
+	 * @param null            $password
+	 * @param null            $api_token
+	 * @param BucketContract  $bucket
+	 * @param SessionContract $session
+	 * @param null            $identity
+	 * @param array           $options
 	 *
 	 * @throws Exceptions\SO24RequestException
 	 */
-	public function __construct( $username, $password, $api_token, BucketContract $bucket, $identity = null, $options = [] ) {
-		$this->request = $this->initRequest( $username, $password, $api_token, $bucket, $identity, $options );
+	public function __construct( $username, $password, $api_token, BucketContract $bucket, SessionContract $session, $identity = null, $options = [] ) {
+		$this->request = $this->initRequest( $username, $password, $api_token, $bucket, $session, $identity, $options );
 	}
 
 	/**
@@ -42,14 +44,15 @@ class SO24
 	 * @param                     $password
 	 * @param                     $api_token
 	 * @param BucketContract      $bucket
+	 * @param SessionContract     $session
 	 * @param                     $identity
 	 * @param array               $options
 	 *
 	 * @return Request
 	 * @throws Exceptions\SO24RequestException
 	 */
-	private function initRequest( $username, $password, $api_token, BucketContract $bucket, $identity, $options = [] ): Request {
-		return new Request( $username, $password, $api_token, $bucket, $identity, $options );
+	private function initRequest( $username, $password, $api_token, BucketContract $bucket, SessionContract $session, $identity, $options = [] ): Request {
+		return new Request( $username, $password, $api_token, $bucket, $session, $identity, $options );
 	}
 
 	/**
