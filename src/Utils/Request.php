@@ -56,6 +56,7 @@ use KgBot\SO24\Classmaps\TransactionService\GetTransactionsResponse;
 use KgBot\SO24\Classmaps\TransactionService\Transaction;
 use KgBot\SO24\Classmaps\UserDefinedDimensions;
 use KgBot\SO24\Contracts\BucketContract;
+use KgBot\SO24\Contracts\SessionContract;
 use KgBot\SO24\Exceptions\SO24RequestException;
 use SoapClient;
 use SoapFault;
@@ -98,32 +99,34 @@ class Request
 	/** @var array */
 	protected $options;
 
-	private $sessionId;
-
 	/** @var SoapClient */
 	private $soapClient;
 	/** @var BucketContract */
 	protected $bucket;
+	/** @var SessionContract */
+	protected $session;
 
 	/**
 	 * Request constructor.
 	 *
-	 * @param null           $username
-	 * @param null           $password
-	 * @param null           $api_token
-	 * @param BucketContract $bucket
-	 * @param null           $identity
-	 * @param array          $options
+	 * @param null            $username
+	 * @param null            $password
+	 * @param null            $api_token
+	 * @param BucketContract  $bucket
+	 * @param SessionContract $session
+	 * @param null            $identity
+	 * @param array           $options
 	 *
 	 * @throws SO24RequestException
 	 */
-	public function __construct( $username, $password, $api_token, BucketContract $bucket, $identity = null, $options = [] ) {
+	public function __construct( $username, $password, $api_token, BucketContract $bucket, SessionContract $session, $identity = null, $options = [] ) {
 		$this->username = $username ?? Config::get( 'laravel-24so.username' );
 		$this->password = $password ?? Config::get( 'laravel-24so.password' );
 		$this->api_key  = $api_token ?? Config::get( 'laravel-24so.api_key' );
 		$this->identity = $identity;
 		$this->options  = $options;
 		$this->bucket   = $bucket;
+		$this->session  = $session;
 
 		$this->handleWithExceptions( function () {
 			$this->get_auth();
@@ -266,8 +269,8 @@ class Request
 		$params ['credential']['ApplicationId'] = $this->api_key;
 		$authentication                         = new SoapClient( 'https://api.24sevenoffice.com/authenticate/V001/authenticate.asmx?wsdl', $options );
 		$login                                  = true;
-		if ( ! empty( $this->sessionId ) ) {
-			$authentication->__setCookie( 'ASP.NET_SessionId', $this->sessionId );
+		if ( ! empty( $sessionId = $this->session->getSessionId() ) ) {
+			$authentication->__setCookie( 'ASP.NET_SessionId', $sessionId );
 			try {
 				$login = ! ( $authentication->HasSession()->HasSessionResult );
 			} catch ( SoapFault $fault ) {
@@ -275,10 +278,10 @@ class Request
 			}
 		}
 		if ( $login ) {
-			$result          = $authentication->Login( $params );
-			$this->sessionId = $result->LoginResult;
+			$result = $authentication->Login( $params );
+			$this->session->setSessionId( $result->LoginResult );
 			// each separate webservice need the cookie set
-			$authentication->__setCookie( 'ASP.NET_SessionId', $this->sessionId );
+			$authentication->__setCookie( 'ASP.NET_SessionId', $result->LoginResult );
 		}
 	}
 
@@ -290,7 +293,7 @@ class Request
 		$options = $this->getOptions();
 
 		$service = new SoapClient( $this->service, $options );
-		$service->__setCookie( 'ASP.NET_SessionId', $this->sessionId );
+		$service->__setCookie( 'ASP.NET_SessionId', $this->session->getSessionId() );
 
 		$this->soapClient = $service;
 
