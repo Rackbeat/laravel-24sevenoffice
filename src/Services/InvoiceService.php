@@ -57,6 +57,7 @@ class InvoiceService extends BaseService
 			'OurReference',
 			'ReferenceInvoiceId',
 			'ReferenceOrderId',
+			'ReferenceNumber',
 			'OrderTotalIncVat',
 			'OrderTotalVat',
 			'PaymentAmount',
@@ -66,6 +67,8 @@ class InvoiceService extends BaseService
 			'Currency',
 			'DeliveryMethod',
 			'YourReference',
+			'InvoiceTitle',
+			'InvoiceText',
 		];
 	}
 
