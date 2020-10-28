@@ -41,6 +41,7 @@ class InvoiceService extends BaseService
 			'Cost',
 			'InPrice',
 			'Type',
+			'SequenceNumber',
 		];
 	}
 
