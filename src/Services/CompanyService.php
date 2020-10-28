@@ -26,7 +26,7 @@ class CompanyService extends BaseService
 	}
 
 	protected function getReturnPropertiesReturnQuery() {
-		return [ 'Type', 'EmailAddresses', 'PhoneNumbers', 'Addresses', 'Name', 'ExternalId', 'Id', 'OrganizationNumber', 'CurrencyId' , 'InvoiceLanguage' ];
+		return [ 'Type', 'EmailAddresses', 'PhoneNumbers', 'Addresses', 'Name', 'ExternalId', 'Id', 'OrganizationNumber', 'CurrencyId', 'InvoiceLanguage', 'TypeGroup' ];
 	}
 
 	/**
