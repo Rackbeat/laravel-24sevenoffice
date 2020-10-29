@@ -75,10 +75,10 @@ class CompanyService extends BaseService
 	/**
 	 * @param array $data
 	 *
-	 * @return Relation
+	 * @return Relation|Collection
 	 * @throws \KgBot\SO24\Exceptions\SO24RequestException
 	 */
-	public function saveRelations( array $data = [] ): Relation {
+	public function saveRelations( array $data = [] ) {
 		return $this->request->call( 'SaveRelations', [
 			'relations' => [ 'Relation' => $data ],
 		] )->getResults();
