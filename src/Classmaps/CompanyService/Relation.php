@@ -32,7 +32,7 @@ class Relation extends SingleResource
 		return collect( $this->PhoneNumbers ?? [] );
 	}
 
-	public function getEmailsAddresses() {
+	public function getEmailAddresses() {
 		return collect( $this->EmailAddresses ?? [] );
 	}
 }

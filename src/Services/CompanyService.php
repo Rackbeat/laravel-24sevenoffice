@@ -6,6 +6,7 @@ namespace KgBot\SO24\Services;
 
 use Illuminate\Support\Collection;
 use KgBot\SO24\Classmaps\CompanyService\Company;
+use KgBot\SO24\Classmaps\CompanyService\Relation;
 
 class CompanyService extends BaseService
 {
@@ -68,6 +69,18 @@ class CompanyService extends BaseService
 
 		return $this->request->call( 'SaveCompanies', [
 			'companies' => [ 'Company' => $data ],
+		] )->getResults();
+	}
+
+	/**
+	 * @param array $data
+	 *
+	 * @return Relation
+	 * @throws \KgBot\SO24\Exceptions\SO24RequestException
+	 */
+	public function saveRelations( array $data = [] ): Relation {
+		return $this->request->call( 'SaveRelations', [
+			'relations' => [ 'Relation' => $data ],
 		] )->getResults();
 	}
 }
