@@ -40,9 +40,11 @@ use KgBot\SO24\Classmaps\InvoiceService\GetInvoicesResult;
 use KgBot\SO24\Classmaps\InvoiceService\InvoiceOrder;
 use KgBot\SO24\Classmaps\InvoiceService\InvoiceRow;
 use KgBot\SO24\Classmaps\InvoiceService\RowType;
+use KgBot\SO24\Classmaps\PersonService\GetPersonIdResponse;
 use KgBot\SO24\Classmaps\PersonService\GetPersonsResponse;
 use KgBot\SO24\Classmaps\PersonService\PersonItem;
 use KgBot\SO24\Classmaps\PersonService\RelationData;
+use KgBot\SO24\Classmaps\PersonService\SavePersonResponse;
 use KgBot\SO24\Classmaps\ProductService\Categories\Category;
 use KgBot\SO24\Classmaps\ProductService\Categories\GetCategoriesResponse;
 use KgBot\SO24\Classmaps\ProductService\Categories\SaveCategoriesResponse;
@@ -396,6 +398,8 @@ class Request
 				'GetPersonsResponse'           => GetPersonsResponse::class,
 				'PersonItem'                   => PersonItem::class,
 				'RelationData'                 => RelationData::class,
+				'SavePersonResponse'           => SavePersonResponse::class,
+				'GetPersonIdResponse'          => GetPersonIdResponse::class,
 				// Transaction Service
 				'GetTransactionsResponse'      => GetTransactionsResponse::class,
 				'Transaction'                  => Transaction::class,

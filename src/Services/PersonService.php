@@ -21,4 +21,16 @@ class PersonService extends BaseService
 	protected function getIndexReturnName() {
 		return [];
 	}
+
+	public function getPersonId( $consumerPersonNo ) {
+		return $this->request->call( 'GetPersonId', [
+			'consumerPersonNo' => $consumerPersonNo
+		] )->getResults();
+	}
+
+	public function savePerson( array $data ) {
+		return $this->request->call( 'SavePerson', [
+			'personItem' => $data
+		] )->getResults();
+	}
 }

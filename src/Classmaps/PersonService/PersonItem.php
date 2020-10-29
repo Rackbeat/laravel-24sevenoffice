@@ -65,4 +65,12 @@ class PersonItem extends SingleResource
 	public function getRelationData() {
 		return collect( $this->RelationData ?? [] );
 	}
+
+	public function getEmailAddresses() {
+		return collect( $this->EmailAddresses ?? [] );
+	}
+
+	public function getPhoneNumbers() {
+		return collect( $this->PhoneNumbers ?? [] );
+	}
 }
