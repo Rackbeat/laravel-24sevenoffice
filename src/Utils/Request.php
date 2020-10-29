@@ -31,6 +31,7 @@ use KgBot\SO24\Classmaps\CompanyService\CompanyMap;
 use KgBot\SO24\Classmaps\CompanyService\GetCompaniesResponse;
 use KgBot\SO24\Classmaps\CompanyService\Relation;
 use KgBot\SO24\Classmaps\CompanyService\SaveCompanyResponse;
+use KgBot\SO24\Classmaps\CompanyService\SaveRelationsResponse;
 use KgBot\SO24\Classmaps\Dimension;
 use KgBot\SO24\Classmaps\InvoiceService\ChangeState;
 use KgBot\SO24\Classmaps\InvoiceService\DeliveryMethod;
@@ -390,6 +391,7 @@ class Request
 				'CompanyMap'                   => CompanyMap::class,
 				'Relation'                     => Relation::class,
 				'SaveCompaniesResponse'        => SaveCompanyResponse::class,
+				'SaveRelationsResponse'        => SaveRelationsResponse::class,
 				// Person Service
 				'GetPersonsResponse'           => GetPersonsResponse::class,
 				'PersonItem'                   => PersonItem::class,
