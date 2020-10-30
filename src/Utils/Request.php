@@ -283,7 +283,7 @@ class Request
 		if ( $login ) {
 			$result = $authentication->Login( $params );
 			// throw an error if the login is unsuccessful
-			if ( $authentication->HasSession()->HasSessionResult == false ) {
+			if ( empty( $result->LoginResult ) ) {
 				throw new SoapFault( "0", "Invalid credential information." );
 			}
 			$this->session->setSessionId( $result->LoginResult );
