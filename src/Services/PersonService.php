@@ -33,4 +33,8 @@ class PersonService extends BaseService
 			'personItem' => $data
 		] )->getResults();
 	}
+
+	public function details( array $request = [] ) {
+		return $this->request->call( 'GetPersonsDetailed', $request )->getResults();
+	}
 }
