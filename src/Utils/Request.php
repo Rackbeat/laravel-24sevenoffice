@@ -330,7 +330,8 @@ class Request
 				'allow_self_signed' => Arr::get( $this->options, 'allow_self_signed', true )
 			],
 			'http' => [
-				'user_agent' => Arr::get( $this->options, 'user_agent', config( 'laravel-24so.user_agent' ) )
+				'user_agent' => Arr::get( $this->options, 'user_agent', config( 'laravel-24so.user_agent' ) ),
+				'header'     => Arr::get( $this->options, 'http_header', 'Content-Type: application/soap+xml; charset=utf-8\r\n' )
 			]
 		];
 
