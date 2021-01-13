@@ -5,7 +5,9 @@ namespace KgBot\SO24\Utils;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 use KgBot\SO24\Classmaps\AccountService\AccountData;
 use KgBot\SO24\Classmaps\AccountService\BundleList;
 use KgBot\SO24\Classmaps\AccountService\GetAccountListResponse;
@@ -271,7 +273,7 @@ class Request
 			$params ['credential']['IdentityId'] = $this->identity;
 		}
 		$params ['credential']['ApplicationId'] = $this->api_key;
-		$authentication                         = new SoapClient( 'https://api.24sevenoffice.com/authenticate/V001/authenticate.asmx?wsdl', $options );
+		$authentication                         = new SoapClient( $this->getAuthWsdlFile(), $options );
 		$login                                  = true;
 		if ( ! empty( $sessionId = $this->session->getSessionId() ) ) {
 			$authentication->__setCookie( 'ASP.NET_SessionId', $sessionId );
@@ -291,6 +293,30 @@ class Request
 			// each separate webservice need the cookie set
 			$authentication->__setCookie( 'ASP.NET_SessionId', $result->LoginResult );
 		}
+	}
+
+	private function getAuthWsdlFile() {
+		$cacheKey = '24so-wsdl-AuthenticateService';
+
+
+		if ( Cache::has( $cacheKey ) ) {
+			return Cache::get( $cacheKey );
+		}
+
+		$file = file_get_contents( 'https://api.24sevenoffice.com/authenticate/V001/authenticate.asmx?wsdl' );
+
+		if ( $file ) {
+			$filename    = '24so_wsdls/AuthenticateService.wsdl';
+			$storagePath = storage_path( 'app/' . $filename );
+
+			if ( Storage::disk( 'local' )->put( $filename, $file ) ) {
+				Cache::put( $cacheKey, $storagePath, 86400 );
+
+				return $storagePath;
+			}
+		}
+
+		return 'https://api.24sevenoffice.com/authenticate/V001/authenticate.asmx?wsdl';
 	}
 
 	/**

@@ -6,9 +6,7 @@ namespace KgBot\SO24\Services;
 
 class AuthenticateService extends BaseService
 {
-	public function setUp(): string {
-		return 'http://api.24sevenoffice.com/authenticate/v001/authenticate.asmx?WSDL';
-	}
+	protected $serviceUrl = 'http://api.24sevenoffice.com/authenticate/v001/authenticate.asmx?WSDL';
 
 	protected function getIndexMethod(): string {
 		return 'GetIdentities';

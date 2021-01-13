@@ -10,9 +10,7 @@ use KgBot\SO24\Classmaps\CompanyService\Relation;
 
 class CompanyService extends BaseService
 {
-	public function setUp(): string {
-		return 'http://api.24sevenoffice.com/CRM/Company/V001/CompanyService.asmx?WSDL';
-	}
+	protected $serviceUrl = 'http://api.24sevenoffice.com/CRM/Company/V001/CompanyService.asmx?WSDL';
 
 	protected function getIndexMethod(): string {
 		return 'GetCompanies';

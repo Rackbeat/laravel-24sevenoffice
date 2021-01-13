@@ -9,9 +9,7 @@ use KgBot\SO24\Classmaps\AccountService\AccountData;
 
 class AccountService extends BaseService
 {
-	public function setUp(): string {
-		return 'https://webservices.24sevenoffice.com/economy/accountV002/Accountservice.asmx?WSDL';
-	}
+	protected $serviceUrl = 'https://webservices.24sevenoffice.com/economy/accountV002/Accountservice.asmx?WSDL';
 
 	protected function getIndexMethod(): string {
 		return 'GetAccountList';

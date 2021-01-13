@@ -4,11 +4,16 @@
 namespace KgBot\SO24\Services;
 
 
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use KgBot\SO24\Utils\Request;
 
 abstract class BaseService implements ServiceInterface
 {
+	/** @var string */
+	protected $serviceUrl;
+
 	/** @var Request */
 	protected $request;
 
@@ -22,7 +27,27 @@ abstract class BaseService implements ServiceInterface
 	}
 
 	public function setUp(): string {
-		throw new \Exception( 'You must override this method in your child classes' );
+		$cacheKey = '24so-wsdl-' . class_basename( $this );
+
+
+		if ( Cache::has( $cacheKey ) ) {
+			return Cache::get( $cacheKey );
+		}
+
+		$file = file_get_contents( $this->serviceUrl );
+
+		if ( $file ) {
+			$filename    = '24so_wsdls/' . class_basename( $this ) . '.wsdl';
+			$storagePath = storage_path( 'app/' . $filename );
+
+			if ( Storage::disk( 'local' )->put( $filename, $file ) ) {
+				Cache::put( $cacheKey, $storagePath, 86400 );
+
+				return $storagePath;
+			}
+		}
+
+		return $this->serviceUrl;
 	}
 
 	/**

@@ -9,9 +9,7 @@ use KgBot\SO24\Exceptions\InvoiceTransferException;
 
 class InvoiceService extends BaseService
 {
-	public function setUp(): string {
-		return 'http://api.24sevenoffice.com/Economy/InvoiceOrder/V001/InvoiceService.asmx?WSDL';
-	}
+	protected $serviceUrl = 'http://api.24sevenoffice.com/Economy/InvoiceOrder/V001/InvoiceService.asmx?WSDL';
 
 	protected function getIndexMethod(): string {
 		return 'GetInvoices';
