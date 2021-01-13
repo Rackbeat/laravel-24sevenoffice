@@ -10,9 +10,7 @@ use KgBot\SO24\Classmaps\ClientService\Currency;
 
 class ClientService extends BaseService
 {
-	public function setUp(): string {
-		return 'https://api.24sevenoffice.com/Client/V001/ClientService.asmx?WSDL';
-	}
+	protected $serviceUrl = 'https://api.24sevenoffice.com/Client/V001/ClientService.asmx?WSDL';
 
 	protected function getIndexMethod(): string {
 		return 'GetUsers';

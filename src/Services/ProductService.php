@@ -12,9 +12,7 @@ use KgBot\SO24\Exceptions\ProductTransferException;
 
 class ProductService extends BaseService
 {
-	public function setUp(): string {
-		return 'http://api.24sevenoffice.com/Logistics/Product/V001/ProductService.asmx?WSDL';
-	}
+	protected $serviceUrl = 'http://api.24sevenoffice.com/Logistics/Product/V001/ProductService.asmx?WSDL';
 
 	protected function getIndexMethod(): string {
 		return 'GetProducts';

@@ -6,9 +6,7 @@ namespace KgBot\SO24\Services;
 
 class TransactionService extends BaseService
 {
-	public function setUp(): string {
-		return 'http://api.24sevenoffice.com/Economy/Accounting/V001/TransactionService.asmx?WSDL';
-	}
+	protected $serviceUrl = 'http://api.24sevenoffice.com/Economy/Accounting/V001/TransactionService.asmx?WSDL';
 
 	protected function getIndexMethod(): string {
 		return 'GetTransactions';
