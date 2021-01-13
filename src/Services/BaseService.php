@@ -5,6 +5,7 @@ namespace KgBot\SO24\Services;
 
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use KgBot\SO24\Utils\Request;
 
@@ -36,13 +37,14 @@ abstract class BaseService implements ServiceInterface
 		$file = file_get_contents( $this->serviceUrl );
 
 		if ( $file ) {
-			$filename = storage_path( '24so_wsdls/' . class_basename( $this ) . '.wsdl' );
+			$filename    = '24so_wsdls/' . class_basename( $this ) . '.wsdl';
+			$storagePath = storage_path( 'app/' . $filename );
 
-			file_put_contents( $filename, $file );
+			if ( Storage::disk( 'local' )->put( $filename, $file ) ) {
+				Cache::put( $cacheKey, $storagePath, 86400 );
 
-			Cache::put( $cacheKey, $filename, 86400 );
-
-			return $filename;
+				return $storagePath;
+			}
 		}
 
 		return $this->serviceUrl;

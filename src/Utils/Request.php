@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 use KgBot\SO24\Classmaps\AccountService\AccountData;
 use KgBot\SO24\Classmaps\AccountService\BundleList;
 use KgBot\SO24\Classmaps\AccountService\GetAccountListResponse;
@@ -305,13 +306,14 @@ class Request
 		$file = file_get_contents( 'https://api.24sevenoffice.com/authenticate/V001/authenticate.asmx?wsdl' );
 
 		if ( $file ) {
-			$filename = storage_path( '24so_wsdls/AuthenticateService.wsdl' );
+			$filename    = '24so_wsdls/AuthenticateService.wsdl';
+			$storagePath = storage_path( 'app/' . $filename );
 
-			file_put_contents( $filename, $file );
+			if ( Storage::disk( 'local' )->put( $filename, $file ) ) {
+				Cache::put( $cacheKey, $storagePath, 86400 );
 
-			Cache::put( $cacheKey, $filename, 86400 );
-
-			return $filename;
+				return $storagePath;
+			}
 		}
 
 		return 'https://api.24sevenoffice.com/authenticate/V001/authenticate.asmx?wsdl';
