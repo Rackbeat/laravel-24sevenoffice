@@ -68,6 +68,7 @@ class InvoiceService extends BaseService
 			'YourReference',
 			'InvoiceTitle',
 			'InvoiceText',
+			'CustomerDeliveryPhone',
 		];
 	}
 
