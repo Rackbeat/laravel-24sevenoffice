@@ -32,9 +32,9 @@ class CompanyService extends BaseService
 	 * @param       $id
 	 * @param array $request
 	 *
-	 * @return Company
+	 * @return Company|null
 	 */
-	public function find( $id, array $request = [] ): Company {
+	public function find( $id, array $request = [] ): ?Company {
 		if ( isset( $request['searchParams'] ) ) {
 			$request['searchParams']['CompanyId'] = $id;
 		} else {
