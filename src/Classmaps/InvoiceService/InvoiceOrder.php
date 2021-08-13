@@ -21,7 +21,7 @@ class InvoiceOrder extends SingleResource
 	/** @var string */
 	public $CustomerDeliveryPhone;
 	/** @var Collection */
-	private $Addresses;
+	public $Addresses;
 	/** @var string */
 	public $OrderStatus;
 	/** @var int */
@@ -81,7 +81,7 @@ class InvoiceOrder extends SingleResource
 	/** @var string */
 	public $InvoiceEmailAddress;
 	/** @var Collection */
-	private $InvoiceRows;
+	public $InvoiceRows;
 	/** @var string */
 	public $ProductionNumber;
 	/** @var string */
