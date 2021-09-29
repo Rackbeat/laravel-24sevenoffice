@@ -23,7 +23,6 @@ abstract class BaseService implements ServiceInterface
 	public function __construct( Request $request ) {
 		$this->request          = $request;
 		$this->request->service = $this->setUp();
-		$this->request->service();
 	}
 
 	public function setUp(): string {
