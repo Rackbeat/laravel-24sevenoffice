@@ -8,6 +8,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use KgBot\SO24\Classmaps\AccountService\AccountData;
 use KgBot\SO24\Classmaps\AccountService\BundleList;
 use KgBot\SO24\Classmaps\AccountService\GetAccountListResponse;
@@ -148,18 +149,16 @@ class Request
 	public function handleWithExceptions( $callback ) {
 		try {
 			return $callback();
-		} catch ( Exception $exception ) {
+		} catch ( \Throwable $exception ) {
 			$message = $exception->getMessage();
-			$code    = $exception->getCode();
+			$code = $exception->getCode();
 
-			if ( preg_match( '/https:\/\/api\.24sevenoffice\.com\/authenticate\/V001\/authenticate\.asmx\?wsdl/', $message ) ) {
+			if ($this->shouldReAuthenticate($message)) {
 				try {
-					sleep( 2 );
 					$this->get_auth();
 
 					return $callback();
-				} catch ( \Exception $e ) {
-
+				} catch ( \Throwable $e ) {
 					throw new SO24RequestException( $e->getMessage(), $e->getCode() );
 				}
 			}
@@ -210,14 +209,14 @@ class Request
 
 			try {
 				$response = $service->__soapCall( $action, [ $request ] );
-			} catch ( \Exception $exception ) {
+			} catch ( \Throwable $exception ) {
 				/*if ( $attempts <= 3 && $this->getResponseCode() === 429 ) {
 					sleep( 1 ); // todo check if this will work because we are allowed approx 25 req. per second and 429 error is not our API limit but standard too much requests made (throttling BUT NOT API LIMIT)
 
 					return $this->call( $action, $request, $attempts + 1 );
 				}*/
 
-				throw $exception;
+                throw $exception;
 			}
 
 			$this->updateBucket();
@@ -225,6 +224,25 @@ class Request
 			return $response;
 		} );
 	}
+
+    private function shouldReAuthenticate(string $excMsg): bool
+    {
+        $messages = [
+            'Client is not authenticated on this identity'
+        ];
+
+        foreach ($messages as $message) {
+            if (Str::contains($excMsg, $messages)) {
+                return true;
+            }
+        }
+
+        if (preg_match('/https:\/\/api\.24sevenoffice\.com\/authenticate\/V001\/authenticate\.asmx\?wsdl/', $excMsg)) {
+            return true;
+        }
+
+        return false;
+    }
 
 	private function retryAfterValue() {
 		if ( $this->soapClient->__getLastResponseHeaders() == null ) {
