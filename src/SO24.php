@@ -11,6 +11,7 @@ use KgBot\SO24\Services\CompanyService;
 use KgBot\SO24\Services\InvoiceService;
 use KgBot\SO24\Services\PersonService;
 use KgBot\SO24\Services\ProductService;
+use KgBot\SO24\Services\ProjectService;
 use KgBot\SO24\Services\TimeService;
 use KgBot\SO24\Services\TransactionService;
 use KgBot\SO24\Utils\Request;
@@ -89,6 +90,13 @@ class SO24
 	public function clients(): ClientService {
 		return new ClientService( $this->request );
 	}
+
+    /**
+     * @return ProjectService
+     */
+    public function projects(): ProjectService {
+        return new ProjectService( $this->request );
+    }
 
 	/**
 	 * @return AuthenticateService
