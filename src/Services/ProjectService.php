@@ -19,6 +19,6 @@ class ProjectService extends BaseService
     }
 
     public function getNameList() {
-        return $this->request->call('GetProjectNameList', [])->getResults();
+        return (array) $this->request->call('GetProjectNameList', [])->GetProjectNameListResult;
     }
 }
